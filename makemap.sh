@@ -20,10 +20,15 @@ function make_map {
 fft HKLIN $1 MAPOUT $2 << eof > /dev/null
 xyzlim asu
 resolution $3 $4
-GRID SAMPLE 5.0
+GRID SAMPLE 6.0
 labin F1=$5 PHI=$6
 end
 eof
+
+# normalize the map
+mapmask mapin $2  mapout $2  << EOF > /dev/null
+SCALE SIGMA
+EOF
 }
 
 #function to get space group name
@@ -117,7 +122,7 @@ while [[ $mapName = "" ]];do
 done
 
 #make map
-echo -e "\nMaking map(s)"
+echo -e "\nMaking and normalizing map(s)"
 case $map_coef in 
 	F_DELWT) 	make_map $filename $mapName-2FoFc.ccp4 $res_low $res_high FWT PHWT 
 				make_map $filename $mapName-FoFc.ccp4 $res_low $res_high DELFWT PHDELWT
