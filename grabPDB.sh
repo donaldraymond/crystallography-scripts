@@ -6,6 +6,7 @@
 
 #January 12 2015 - Initial release
 #January 14 2015 - Added feature to take parameter
+#January 20 2015 - Added feature to deal with intensities
 
 #for debugging
 #set -x
@@ -84,6 +85,22 @@ SYMMETRY $space_group
 END
 eof
 
+if grep -q "_refln.intensity_meas" $cif_file; then
+#Convert I to F
+echo -e "\nConverting intensities to amplitudes"
+ctruncate -mtzin  ./temp.mtz -mtzout ./temp1.mtz -no-aniso -colin "/*/*/[I,SIGI]" -freein '/*/*/[FREE]' > /dev/null
+
+#delete intensity columns headings
+mtzutils HKLIN "temp1.mtz" HKLOUT "temp2.mtz" << eof > /dev/null
+COLUMN_LABELS F=FP SIGF=SIGFP
+EXCLUDE I SIGI
+END
+eof
+
+cp temp2.mtz temp.mtz
+fi
+
+
 #Calculate phases
 echo -e "\nCalculating structure factors and map coefficients"
 refmac5 XYZIN "$pdb_file" XYZOUT temp.pdb HKLIN temp.mtz HKLOUT $pdb_id.mtz << eof > /dev/null
@@ -95,7 +112,7 @@ END
 eof
 
 #cleanup
-rm temp.* "$cif_file" 2> /dev/null
+rm temp* "$cif_file" 2> /dev/null
 
 #end
 echo -e "\nScript DONE!!\n"
