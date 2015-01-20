@@ -88,16 +88,21 @@ eof
 if grep -q "_refln.intensity_meas" $cif_file; then
 #Convert I to F
 echo -e "\nConverting intensities to amplitudes"
-ctruncate -mtzin  ./temp.mtz -mtzout ./temp1.mtz -no-aniso -colin "/*/*/[I,SIGI]" -freein '/*/*/[FREE]' > /dev/null
-
-#delete intensity columns headings
-mtzutils HKLIN "temp1.mtz" HKLOUT "temp2.mtz" << eof > /dev/null
-COLUMN_LABELS F=FP SIGF=SIGFP
-EXCLUDE I SIGI
-END
+truncate="$CCP4/bin/truncate"
+$truncate HKLIN "temp.mtz" HKLOUT "temp1.mtz" << eof > /dev/null
+truncate YES
+anomalous NO
+nresidue 888
+plot OFF
+header BRIEF BATCH
+labin IMEAN=I SIGIMEAN=SIGI  FreeR_flag=FREE
+labout F=FP SIGF=SIGFP FreeR_flag=FREE
+falloff yes
+NOHARVEST
+end
 eof
 
-cp temp2.mtz temp.mtz
+cp temp1.mtz temp.mtz
 fi
 
 

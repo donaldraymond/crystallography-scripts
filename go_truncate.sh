@@ -5,7 +5,7 @@
 ###################################################################
 
 #Define truncate command
-truncate=/programs/x86_64-linux/ccp4/6.4.0/ccp4-6.4.0/bin/truncate
+truncate=$CCP4/bin/truncate
 
  #Ask user for output file name
  echo -n "Output file name (eg SCH0312.mtz):" 
