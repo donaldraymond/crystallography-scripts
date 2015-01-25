@@ -7,6 +7,7 @@
 #January 12 2015 - Initial release
 #January 14 2015 - Added feature to take parameter
 #January 20 2015 - Added feature to deal with intensities
+#January 22 2015 - Added checks to deal with duplicates in cif file
 
 #for debugging
 #set -x
@@ -19,6 +20,41 @@ else
 	echo -e "\ncif2mtz and refmac5 are required to run this script\n"
 	exit 1
 fi
+
+#############################
+#
+#Functions
+#
+#############################
+
+#function to get cell dimensions
+function get_cell {
+awk "/_cell."$1"/ {print \$2;exit}" "$cif_file"
+}
+
+#function to get resolution
+function get_res {
+grep "$1" $pdb_file | awk -F ":" '{print $2;exit}' | awk '{ gsub (" ", "", $0); print}'
+}
+
+#function to convert intensities to amplitudes
+function int_amp {
+#Convert I to F
+echo -e "\nConverting intensities to amplitudes"
+truncate="$CCP4/bin/truncate"
+$truncate HKLIN "temp.mtz" HKLOUT "temp1.mtz" << eof > /dev/null
+truncate YES
+anomalous NO
+nresidue 888
+plot OFF
+header BRIEF BATCH
+labin IMEAN=I SIGIMEAN=SIGI  FreeR_flag=FREE
+labout F=FP SIGF=SIGFP FreeR_flag=FREE
+falloff yes
+NOHARVEST
+end
+eof
+}
 
 #clear screen
 clear
@@ -58,53 +94,38 @@ curl -O -f "http://www.pdb.org/pdb/files/$pdb_id.pdb"
 pdb_file="$pdb_id.pdb"
 
 #get unit cells constants
-a=`awk '/_cell.length_a/ {print $2}' "$cif_file"`
-b=`awk '/_cell.length_b/ {print $2}' "$cif_file"`
-c=`awk '/_cell.length_c/ {print $2}' "$cif_file"`
-alpha=`awk '/_cell.angle_alpha/ {print $2}' "$cif_file"`
-beta=`awk '/_cell.angle_beta/ {print $2}' "$cif_file"`
-gamma=`awk '/_cell.angle_gamma/ {print $2}' "$cif_file"`
+a=$(get_cell "length_a")
+b=$(get_cell "length_b")
+c=$(get_cell "length_c")
+alpha=$(get_cell "angle_alpha")
+beta=$(get_cell "angle_beta")
+gamma=$(get_cell "angle_gamma")
 
 echo -e "\nUnit cell constants are: $a $b $c $alpha $beta $gamma"
 
 #get space group
-space_group=`grep "symmetry.space_group_name" $cif_file | awk -F "['\"]" '{print $2}' | awk '{ gsub (" ", "", $0); print}'`
+space_group=`grep "symmetry.space_group_name" $cif_file | awk -F "['\"]" '{print $2;exit}' | awk '{ gsub (" ", "", $0); print}'`
 
 echo -e "\nSpace group is: $space_group"
 
 #get resolution
-high_res=`grep "RESOLUTION RANGE HIGH (ANGSTROMS)" $pdb_file | awk -F ":" '{print $2}' | awk '{ gsub (" ", "", $0); print}'`
-low_res=`grep "RESOLUTION RANGE LOW  (ANGSTROMS)" $pdb_file | awk -F ":" '{print $2}'  | awk '{ gsub (" ", "", $0); print}'`
+high_res=$(get_res "RESOLUTION RANGE HIGH (ANGSTROMS)")
+low_res=$(get_res "RESOLUTION RANGE LOW  (ANGSTROMS)")
 
 echo -e "\nResolution is: $low_res  $high_res "
 
 #Convert mmCIF to MTZ
 echo -e "\nConverting mmCIF to MTZ"
 cif2mtz  HKLIN $cif_file HKLOUT temp.mtz << eof > /dev/null
-SYMMETRY $space_group
+SYMMETRY "$space_group"
 END
 eof
 
-if grep -q "_refln.intensity_meas" $cif_file; then
+#check to see if data are in intensities or amplitudes
+if ! grep -q "_refln.F_meas_au" $cif_file && grep -q "_refln.intensity_meas" $cif_file; then
 #Convert I to F
-echo -e "\nConverting intensities to amplitudes"
-truncate="$CCP4/bin/truncate"
-$truncate HKLIN "temp.mtz" HKLOUT "temp1.mtz" << eof > /dev/null
-truncate YES
-anomalous NO
-nresidue 888
-plot OFF
-header BRIEF BATCH
-labin IMEAN=I SIGIMEAN=SIGI  FreeR_flag=FREE
-labout F=FP SIGF=SIGFP FreeR_flag=FREE
-falloff yes
-NOHARVEST
-end
-eof
-
-cp temp1.mtz temp.mtz
+int_amp
 fi
-
 
 #Calculate phases
 echo -e "\nCalculating structure factors and map coefficients"

@@ -16,8 +16,10 @@
 #01/08/15 Added feature to scan arguments for mtz and pdb inputs
 #01/14/15 Added function to get pdb and mtz files
 #01/19/15 Removed Duke stereochemistry files due to broken bonds
+#01/22/15 Added feature to read old/residue_dict.odb
+#01/23/14 Added feature to hide O files
 
-last_update="January 19 2015"
+last_update="January 23 2015"
 
 #######################################################
 
@@ -107,6 +109,14 @@ function spacegroup {
  grep "Space group name" sftoolsread.txt | awk -F ":" '{print $2}' | awk '{ gsub (" ", "", $0); print}'
 }
 
+#function to append map name to o_files
+function redraw {
+echo "fm_draw $1" >> $O_dir/next_water
+echo "fm_draw $1" >> $O_dir/next_ca
+echo "fm_draw $1" >> $O_dir/previous_ca
+echo "fm_draw $1" >> $O_dir/redraw_map
+}
+
 # Echo purpose of script
 echo -e "\n"
 echo -e "******************************************************************"
@@ -176,7 +186,7 @@ elif  $(grep -q 2FOFCWT sftoolsread.txt); then
 	map_coef=2FO
 else
 	echo -e "\tNo known map coefficients found\n\n\tSend mtz to raymond@crystal.harvard.edu to update this script\n"
-	exit
+	exit 1
 fi
 
 #Ask user for map prefix
@@ -186,110 +196,105 @@ while [[ $mapName = "" ]];do
 	read mapName
 done
 
-####################################################
-#
-#Prepare ono file for launching O
-#
-####################################################
-
-#function to append map name to o_files
-function redraw {
-echo "fm_draw $1" >> next_water
-echo "fm_draw $1" >> next_ca
-echo "fm_draw $1" >> previous_ca
-echo "fm_draw $1" >> redraw_map
-}
-
 ##################################################
 #
 # make o files
 #
 ##################################################
 
+#make .O_files folder
+O_dir=".O_files"
+
+if [ -d "$O_dir" ]; then
+	rm -rf "$O_dir/*" 2> /dev/null
+else
+	mkdir "$O_dir"
+fi
+
 #make o macro files
-echo "! generates nearby symmetry atoms" > gen_symmetry
-echo "symm_sph ;; 10.0" >> gen_symmetry
-echo "" >> gen_symmetry
+echo '! generates nearby symmetry atoms
+symm_sph ;; 10.0' >> $O_dir/gen_symmetry
 
-echo ".MENU                     T          48         40" > menu_raymond.odb
-echo "colour_text red" >> menu_raymond.odb
-echo "STOP" >> menu_raymond.odb
-echo "colour_text white" >> menu_raymond.odb
-echo "<Save Database> Save_DB" >> menu_raymond.odb
-echo "colour_text magenta" >> menu_raymond.odb
-echo "<Clear flags> Clear_flags" >> menu_raymond.odb
-echo "colour_text green" >> menu_raymond.odb
-echo "Yes" >> menu_raymond.odb
-echo "colour_text red" >> menu_raymond.odb
-echo "No" >> menu_raymond.odb
-echo "colour_text cyan" >> menu_raymond.odb
-echo "<Centre ID> Centre_id" >> menu_raymond.odb
-echo "<Clear ID text> Clear_Id" >> menu_raymond.odb
-echo "colour_text yellow" >> menu_raymond.odb
-echo "<Build Residue> bu_res" >> menu_raymond.odb
-echo "<Build Rotamer> build_rot" >> menu_raymond.odb
-echo "colour_text cyan" >> menu_raymond.odb
-echo "<Baton Build> Baton_build" >> menu_raymond.odb
-echo "<Lego C alpha> Lego_CA" >> menu_raymond.odb
-echo "<Lego Loop> Lego_Loop" >> menu_raymond.odb
-echo "<Lego Side Chain> Lego_side_ch" >> menu_raymond.odb
-echo "<Add Water> Water_add" >> menu_raymond.odb
-echo "colour_text magenta" >> menu_raymond.odb
-echo "<RSR Group> Fm_rsr_grou" >> menu_raymond.odb
-echo "<RSR Rotamer> Fm_rsr_rota" >> menu_raymond.odb
-echo "<RSR Torsion> Fm_rsr_tors" >> menu_raymond.odb
-echo "<RSR Zone> Fm_rsr_zone" >> menu_raymond.odb
-echo "colour_text yellow" >> menu_raymond.odb
-echo "<Grab Atom> Grab_atom" >> menu_raymond.odb
-echo "<Grab Fragment> Grab_fragment" >> menu_raymond.odb
-echo "<Grab Residue> Grab_residue" >> menu_raymond.odb
-echo "<Move Zone> Move_zone" >> menu_raymond.odb
-echo "colour_text cyan" >> menu_raymond.odb
-echo "<Flip Peptide> Flip_peptide" >> menu_raymond.odb
-echo "<Refine Zone> Refi_zone" >> menu_raymond.odb
-echo "Tor_residue" >> menu_raymond.odb
-echo "colour_text yellow" >> menu_raymond.odb
-echo "<Distance> Dist_define" >> menu_raymond.odb
-echo "<Neighbours> Neighbour_atom" >> menu_raymond.odb
-echo "Trig_reset" >> menu_raymond.odb
-echo "Trig_refresh" >> menu_raymond.odb
-echo "colour_text turquoise" >> menu_raymond.odb
-echo "<gen symmetry> @gen_symmetry" >> menu_raymond.odb
-echo "<redraw solv> @redraw_solv" >> menu_raymond.odb
-echo "<redraw map> @redraw_map" >> menu_raymond.odb
-echo "<next water> @next_water" >> menu_raymond.odb
-echo "<next ca> @next_ca" >> menu_raymond.odb
-echo "<previous ca> @previous_ca" >> menu_raymond.odb
+echo '.MENU                     T          48         40
+colour_text red
+STOP
+colour_text white
+<Save Database> Save_DB
+colour_text magenta
+<Clear flags> Clear_flags
+colour_text green
+Yes
+colour_text red
+No
+colour_text cyan
+<Centre ID> Centre_id
+<Clear ID text> Clear_Id
+colour_text yellow
+<Build Residue> bu_res
+<Build Rotamer> build_rot
+colour_text cyan
+<Baton Build> Baton_build
+<Lego C alpha> Lego_CA
+<Lego Loop> Lego_Loop
+<Lego Side Chain> Lego_side_ch
+<Add Water> Water_add
+colour_text magenta
+<RSR Group> Fm_rsr_grou
+<RSR Rotamer> Fm_rsr_rota
+<RSR Torsion> Fm_rsr_tors
+<RSR Zone> Fm_rsr_zone
+colour_text yellow
+<Grab Atom> Grab_atom
+<Grab Fragment> Grab_fragment
+<Grab Residue> Grab_residue
+<Move Zone> Move_zone
+colour_text cyan
+<Flip Peptide> Flip_peptide
+<Refine Zone> Refi_zone
+Tor_residue
+colour_text yellow
+<Distance> Dist_define
+<Neighbours> Neighbour_atom
+Trig_reset
+Trig_refresh
+colour_text turquoise
+<Gen Symmetry> @.O_files/gen_symmetry
+<Redraw Solv> @.O_files/redraw_solv
+<Redraw Map> @.O_files/redraw_map
+<Next Water> @.O_files/next_water
+<Next ca> @.O_files/next_ca
+<Previous ca> @.O_files/previous_ca' >> $O_dir/menu_raymond.odb
 
-echo "! centers screen on next alpha-carbon and redraws " > next_ca
-echo "! electron density maps as defined in on_startup " >> next_ca
-echo "centre_next atom_name = ca" >> next_ca
+echo '! centers screen on next alpha-carbon and redraw
+! electron density maps as defined in on_startup
+centre_next atom_name = ca' >> $O_dir/next_ca
 
-echo "! centers screen on next solvent molecule and" > next_water
-echo "! redraws electron density maps as define in on_startup" >> next_water
-echo "centre_next atom_name = o" >> next_water
+echo '! centers screen on next solvent molecule and
+! redraws electron density maps as define in on_startup
+centre_next atom_name = o' >> $O_dir/next_water
 
-echo "! centers screen on next alpha-carbon and redraws " > previous_ca
-echo "! electron density maps as defined in on_startup " >> previous_ca
-echo "centre_previous atom_name = ca" >> previous_ca
+echo '! centers screen on next alpha-carbon and redraws
+! electron density maps as defined in on_startup
+centre_previous atom_name = ca' >> $O_dir/previous_ca
 
-echo "! redraws maps defined in on_startup" > redraw_map
+echo "! redraws maps defined in on_startup" > $O_dir/redraw_map
 
-echo "! redraws solvent molecules and protein " > redraw_solv
-echo "! useful after using add_water command " >> redraw_solv
-echo "! rename solv and hica as required" >> redraw_solv
-echo "mol solv" >> redraw_solv
-echo "zo ;end" >> redraw_solv
-echo "mol hica" >> redraw_solv
+echo '! redraws solvent molecules and protein
+! useful after using add_water command
+! rename solv and hica as required
+mol solv
+zo ;end
+mol hica' >> $O_dir/redraw_solv
 
-echo ".ID_TEMPLATE         T          2         40" > resid.odb
-echo "%Restyp %RESNAM %ATMNAM" >> resid.odb
-echo "residue_2ry_struc" >> resid.odb
+echo '.ID_TEMPLATE         T          2         40
+%Restyp %RESNAM %ATMNAM
+residue_2ry_struc' >> $O_dir/resid.odb
 
 #make on_startup file
 echo -e "! read database files" > on_startup
-echo -e "read menu_raymond.odb" >> on_startup
-echo -e "read resid.odb\n" >> on_startup
+echo -e "read .O_files/menu_raymond.odb" >> on_startup
+echo -e "read old/residue_dict.odb" >> on_startup
+echo -e "read .O_files/resid.odb\n" >> on_startup
 
 echo -e "! open menus" >> on_startup
 echo -e "win_open user_menu $m_user" >> on_startup
@@ -349,7 +354,8 @@ case $map_coef in
 					;;
 
 	*)			echo -e "\nUnknow map coefficients labels"
-				echo -e "Please send MTZ to raymond@crystal.harvard.edu to update script"
+				echo -e "Please send MTZ to raymond@crystal.harvard.edu to update script\n"
+				exit 1
 					;;
 esac
  
@@ -392,6 +398,9 @@ fi
 #on_start file created
 echo -e "\n\tAn on_startup file has been created for use in ONO."
 echo -e "\n\tThe map(s)$extra will automatically be loaded into ONO upon launch."
+
+#clean up
+rm sftoolsread.txt
 
 #Finish script
 echo -e "\nScript finished\n"
