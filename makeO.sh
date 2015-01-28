@@ -49,10 +49,20 @@ den2="1.06 0.65"
 den3="1.06 0.32"
 den4=""
 
-########
+###############################
 #  FUNCTIONS
-########
+###############################
 
+#function to run sftools
+function read_mtz {
+#read file in sftools
+sftools <<EOF | tee sftoolsread.txt
+ read $filename
+ complete
+ list
+ quit
+EOF
+}
 
 #function to get file 1:file, 2-file extension
 function get_file {
@@ -144,15 +154,7 @@ done
 get_file "$mtzfile" mtz && mtzfile="$loc_file"
 
 echo -e "\nRunning sftools"
-#read file in sftools
-#sftools <<EOF > sftoolsread.txt
-sftools <<EOF | tee sftoolsread.txt
- read $mtzfile
- complete
- list
- quit
-EOF
-
+read_mtz
 
 #get the resolution 
 echo -e "\nGetting resolution limits"

@@ -11,9 +11,36 @@
 last_update="January 14 2015"
 
 #######################################################
+#for begugging 
+#set -x
+
+#check is sftools and fft are installed
+if hash sftools 2>/dev/null && hash fft 2>/dev/null; then
+	echo -e "\nFound sftools and fft...continuing with script"
+else
+	echo -e "\nsftools and fft are required to run this script\n"
+	exit 1
+fi
 
 #clear screen
 clear
+
+###############################
+#
+# Functions
+#
+###############################
+
+#function to run sftools
+function read_mtz {
+#read file in sftools
+sftools <<EOF | tee sftoolsread.txt
+ read $filename
+ complete
+ list
+ quit
+EOF
+}
 
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
@@ -69,15 +96,7 @@ else
 fi
 
 echo -e "\nRunning sftools"
-#read file in sftools
-#sftools <<EOF > sftoolsread.txt
-sftools <<EOF | tee sftoolsread.txt
- read $filename
- complete
- list
- quit
-EOF
-
+read_mtz
 
 #get the resolution 
 echo -e "\nGetting resolution limits"
