@@ -27,6 +27,11 @@ fi
 #
 #############################
 
+#function to download file
+function get_file {
+curl -O -f "http://www.pdb.org/pdb/files/"$pdb_id""$1""
+}
+
 #function to get cell dimensions
 function get_cell {
 awk "/_cell."$1"/ {print \$2;exit}" "$cif_file"
@@ -35,6 +40,15 @@ awk "/_cell."$1"/ {print \$2;exit}" "$cif_file"
 #function to get resolution
 function get_res {
 grep "$1" $pdb_file | awk -F ":" '{print $2;exit}' | awk '{ gsub (" ", "", $0); print}'
+}
+
+#function to make mtz
+function make_mtz {
+echo -e "\nConverting mmCIF to MTZ"
+cif2mtz  HKLIN $cif_file HKLOUT temp.mtz << eof > /dev/null
+SYMMETRY "$space_group"
+END
+eof
 }
 
 #function to convert intensities to amplitudes
@@ -53,6 +67,18 @@ labout F=FP SIGF=SIGFP FreeR_flag=FREE
 falloff yes
 NOHARVEST
 end
+eof
+}
+
+#function to calculate map coefficients
+function calc_mapcoef {
+echo -e "\nCalculating structure factors and map coefficients"
+refmac5 XYZIN "$pdb_file" XYZOUT temp.pdb HKLIN temp.mtz HKLOUT $pdb_id.mtz << eof > /dev/null
+labin  FP=FP SIGFP=SIGFP FREE=FREE
+ncyc 0
+labout  FC=FC FWT=FWT PHIC=PHIC PHWT=PHWT DELFWT=DELFWT PHDELWT=PHDELWT FOM=FOM
+RSIZE 80
+END
 eof
 }
 
@@ -79,7 +105,7 @@ fi
 
 #get cif-file from PDB
 echo -e "\nGetting $pdb_id structure factor file from PDB\n"
-curl -O -f "http://www.pdb.org/pdb/files/$pdb_id-sf.cif"
+get_file "-sf.cif"
 
 #if cannot download the file, end script
 if [[ "$?" != "0" ]] ; then
@@ -90,7 +116,7 @@ cif_file="$pdb_id-sf.cif"
 
 #get pdb file pro
 echo -e "\nGetting $pdb_id coordinate file from PDB\n"
-curl -O -f "http://www.pdb.org/pdb/files/$pdb_id.pdb"
+get_file ".pdb"
 pdb_file="$pdb_id.pdb"
 
 #get unit cells constants
@@ -115,11 +141,7 @@ low_res=$(get_res "RESOLUTION RANGE LOW  (ANGSTROMS)")
 echo -e "\nResolution is: $low_res  $high_res "
 
 #Convert mmCIF to MTZ
-echo -e "\nConverting mmCIF to MTZ"
-cif2mtz  HKLIN $cif_file HKLOUT temp.mtz << eof > /dev/null
-SYMMETRY "$space_group"
-END
-eof
+make_mtz
 
 #check to see if data are in intensities or amplitudes
 if ! grep -q "_refln.F_meas_au" $cif_file && grep -q "_refln.intensity_meas" $cif_file; then
@@ -128,14 +150,7 @@ int_amp
 fi
 
 #Calculate phases
-echo -e "\nCalculating structure factors and map coefficients"
-refmac5 XYZIN "$pdb_file" XYZOUT temp.pdb HKLIN temp.mtz HKLOUT $pdb_id.mtz << eof > /dev/null
-labin  FP=FP SIGFP=SIGFP FREE=FREE
-ncyc 0
-labout  FC=FC FWT=FWT PHIC=PHIC PHWT=PHWT DELFWT=DELFWT PHDELWT=PHDELWT FOM=FOM
-RSIZE 80
-END
-eof
+calc_mapcoef 
 
 #cleanup
 rm temp* "$cif_file" 2> /dev/null
