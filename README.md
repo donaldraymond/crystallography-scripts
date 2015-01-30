@@ -2,7 +2,7 @@
 
 These are a collection of scripts that I wrote to help with specific tasts in X-ray crystallography. I started this project to learn bash scripting and will push updates when ever I can.
 
-Most of the scripts in this git repository require the [CCP4](http://www.ccp4.ac.uk) package. I try to use CCP4 programs exclusively to ensure that general compatibility. When I use program outside of the CCP4 suite, I run a check to see if that program is installed before running the script.
+Most of the scripts in this git repository require the [CCP4](http://www.ccp4.ac.uk) package. I try to use CCP4 programs exclusively to ensure general compatibility. When I use program outside of the CCP4 suite, I run a check to see if that program is installed before running the script.
 
 Check permissions before the scripts. Use `chmod +x script.sh` to make the script executable
 
@@ -20,4 +20,34 @@ After running the script the PDB and MTZ files can be opened in COOT, PyMOL to v
 
 The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the O graphics program. This script is fully automated an only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
 
+The script using fft for generating the maps and then uses mapmask to normalize the map. It creates an on_startup O macro file with the map and model already added.
+
 Run like this `makeO.sh file.mtz file.pdb`, or simple run `makeO.sh` and follow instructions.
+
+## makemap.sh
+
+This is a striped-down version of the makeO.sh script. All it does is make maps from an mtz with map coefficients.
+
+## O_insertSeq.sh
+
+This script generates the O commands to insert residues into the database. It is most useful during building.
+
+## XDS scripts
+
+The following scripts deal specifically with [XDS](http://xds.mpimf-heidelberg.mpg.de).
+
+### XDS_refine.sh
+
+This is a bash script to reprocess data with XDS using the correct spacegroup, refined geometry and fine-slicing of profiles AND/OR with refined values for beam divergence and mosaicity
+
+### XDS_IndexWithGoodSpots.sh
+
+Sometime XDS stop because < 50% of spot get indexed. This can be due to numerous reasons including split lattice. This script reindexes using only the good spots in the SPOTS.XDS file.
+
+### XDS_scale.sh
+
+This script runs XSCALE and XDSCONV after data processing to creates an MTZ file.
+
+### XDS_truncate.sh
+
+A script to create an MTZ file from XDS_ASCII.HKL and convert I to F. This script is superceeded by XDS_scale.sh since XDSCONV can convert I to F.
