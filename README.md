@@ -6,6 +6,8 @@ Most of the scripts in this git repository require the [CCP4](http://www.ccp4.ac
 
 Check permissions before the scripts. Use `chmod +x script.sh` to make the script executable
 
+Report bugs or feature request to *raymond [at] crystal.harvard.edu*
+
 ## grabPDB.sh
 
 The purpose of this script is to download atomic coordinates and reflections files from the [Protein Data Bank.](www.rcsb.org)
