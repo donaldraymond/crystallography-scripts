@@ -57,7 +57,7 @@ den4=""
 function read_mtz {
 #read file in sftools
 sftools <<EOF | tee sftoolsread.txt
- read $filename
+ read $mtzfile
  complete
  list
  quit
