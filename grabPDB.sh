@@ -68,6 +68,8 @@ falloff yes
 NOHARVEST
 end
 eof
+
+mv temp1.mtz temp.mtz
 }
 
 #function to calculate map coefficients
