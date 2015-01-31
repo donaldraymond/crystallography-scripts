@@ -1,6 +1,6 @@
 # Scripts for X-ray crystallography
 
-These are a collection of scripts that I wrote to help with specific tasts in X-ray crystallography. I started this project to learn bash scripting and will push updates when ever I can.
+These are a collection of scripts that I wrote to help with specific tasts in X-ray crystallography. I started this project to learn bash scripting and will push updates whenever I can.
 
 Most of the scripts in this git repository require the [CCP4](http://www.ccp4.ac.uk) package. I try to use CCP4 programs exclusively to ensure general compatibility. When I use program outside of the CCP4 suite, I run a check to see if that program is installed before running the script.
 
@@ -20,7 +20,7 @@ After running the script the PDB and MTZ files can be opened in COOT, PyMOL to v
 
 ## makeO.sh
 
-The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the O graphics program. This script is fully automated an only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
+The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the [O graphics program](http://xray.bmc.uu.se/alwyn/TAJ/Home.html). This script is fully automated an only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
 
 The script using fft for generating the maps and then uses mapmask to normalize the map. It creates an on_startup O macro file with the map and model already added.
 
