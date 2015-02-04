@@ -3,9 +3,12 @@
 # Script to refine data with refined geometry parameters from integration and scaling
 
 # Written by Donald Raymond [raymond@crystal.harvard.edu]
-# last edited Decemember 8th 2014
+# last edited January 2nd 2015
 #
 ##################################################################
+
+#for debugging
+#set -x
 
 #Redirect STDOUT of the script output to a log file
 exec >  >(tee  Reprocessing.log)
@@ -142,8 +145,8 @@ function repro_BEAM {
 
 #function to get scaling statisticss table
 function stats {
-	echo "Scaling statistics for cycle: $1";echo
-	egrep -B 25 "WILSON STATISTICS OF DATA SET" CORRECT.LP | egrep -A 21  "SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE"
+	echo -e "Scaling statistics $1\n"
+	egrep -B 25 "WILSON STATISTICS OF DATA SET" "$2"CORRECT.LP"$3" | egrep -A 21  "SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE"
 }
 ###########################################################
 ### RUNNING SCRIPT
@@ -218,14 +221,14 @@ echo "Saving initial files"
 copyFiles ini
 
 #get stats table before reprocessing
-echo;stats 00
+echo;stats "before refinement"
 
 #Loop for reprocessing without BEAM optimzation
 for i in $(seq -f "%02g" 1 $reproc); do
 	echo; echo "####################################################";echo
 	echo "Reprocessing with REFINED GEOMETRY AND FINE-SLICING OF PROFILES: Cycle $i of $(printf %02d $reproc)";echo
 	repro $i
-	stats $i
+	stats "for cycle $i"
 	copyFiles repro_$i
 done
 
@@ -234,7 +237,7 @@ for j in $(seq -f "%02g" 1 $beam_reproc); do
 	echo; echo "####################################################";echo
 	echo "Reprocessing with REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY: Cycle $j of $(printf %02d $beam_reproc)";echo
 	repro_BEAM $j
-	stats $j
+	stats "for cycle $j"
 	copyFiles BEAM_$j
 done
 
@@ -244,6 +247,29 @@ mv Reprocessing.log reprocess/
 echo "Reprocessing finished";echo
 
 
-#compare correct file
-echo "Comparing CORRECT.LP files";echo
-vimdiff reprocess/CORRECT.LP_ini reprocess/CORRECT.LP_repro_$i reprocess/CORRECT.LP_BEAM_$j
+#compare stats from different runs
+echo -e "\n\n**************************************************************
+**************************************************************
+\t\t\tSUMMARY
+**************************************************************
+**************************************************************\n"
+#stats from CORRECT LP before refinement
+stats "before refinement" "reprocess/" "_ini"
+
+#spacer
+echo -e "\n####################################################\n"
+
+#stats from CORRECt LP after Reprocessing with REFINED GEOMETRY AND FINE-SLICING OF PROFILES
+stats "after Reprocessing with REFINED GEOMETRY AND FINE-SLICING OF PROFILES" "reprocess/" "_repro_$i"
+
+#spacer
+echo -e "\n####################################################\n"
+
+#stats from CORRECT LP after Reprocessing with REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY
+stats "after Reprocessing with REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY" "reprocess/" "_BEAM_$j"
+
+#spacer
+echo -e "\n####################################################\n"
+
+#end script
+echo -e "\nScript finished\n"
