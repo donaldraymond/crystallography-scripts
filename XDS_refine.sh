@@ -120,6 +120,16 @@ done
 echo
 }
 
+#function to create directories
+function make_dir {
+if [ ! -d $1 ]; then
+    mkdir $1 
+    echo -e "Created $1 directory\n"
+else
+    echo -e "$1 directory exists\n"
+fi
+}
+
 #Function to run XDS
 function run_xds {
 if [[ "$input_mode" = "s" ]] || [[ "$input_mode" = "S" ]]; then
@@ -190,22 +200,11 @@ get_number "REFINED GEOMETRY AND FINE-SLICING OF PROFILES" && reproc=$number
 # REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY cycles
 get_number "REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY" && beam_reproc=$number
 
+#make log directory
+make_dir "log"
 
-#create log dir
-if [ ! -d log ]; then
-    mkdir log
-	echo -e "Created log directory\n"
-else
-	echo -e "Log directory exists\n"
-fi
-
-#create reprocess dir
-if [ ! -d reprocess ]; then
-    mkdir reprocess
-	echo -e "Created reprocess directory\n"
-else
-	echo -e "Reprocess directory exists\n"
-fi
+#make reprocess directory
+make_dir "reprocess"
 
 #########################################################
 
