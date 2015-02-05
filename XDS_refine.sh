@@ -103,6 +103,23 @@ function copyFiles {
 	fi
 }
 
+#Function to get number of cycles
+function get_number {
+check="fail"
+while [[ "$check" = "fail" ]]; do
+	echo -n "Number of cycles with $1: "
+    read number
+
+    if ! [ "$number" -eq "$number" ] 2> /dev/null || [ "$number" -lt "0" ] 2> /dev/null; then
+        echo -e "\nInvalid input\n"
+    else 
+        echo -e "\nRunning $number cycles with $1"
+        check="pass"
+    fi  
+done
+echo
+}
+
 #Function to run XDS
 function run_xds {
 if [[ "$input_mode" = "s" ]] || [[ "$input_mode" = "S" ]]; then
@@ -167,32 +184,11 @@ done
 
 #get number of cycles
 
-number_1="fail"
-while [[ "$number_1" = "fail" ]]; do
-	echo -n "Number of cycles with REFINED GEOMETRY AND FINE-SLICING OF PROFILES: "
-	read reproc
+# REFINED GEOMETRY AND FINE-SLICING OF PROFILES cycles
+get_number "REFINED GEOMETRY AND FINE-SLICING OF PROFILES" && reproc=$number
 
-	if ! [ "$reproc" -eq "$reproc" ] 2> /dev/null; then
-		echo -e "\nInvalid input\n"
-	else 
-		echo -e "\nRunning $reproc cycles with REFINED GEOMETRY AND FINE-SLICING OF PROFILES\n"
-		number_1="pass"
-	fi
-done
-
-
-number_2="fail"
-while [[ "$number_2" = "fail" ]]; do
-	echo -n "Number of cycles with REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY: "
-	read beam_reproc
-
-	if ! [ "$beam_reproc" -eq "$beam_reproc" ] 2> /dev/null; then
-		echo -e"\nInvalid input\n"
-	else 
-		echo -e "\nRunning $beam_reproc cycles with REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY\n"
-		number_2="pass"
-	fi
-done
+# REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY cycles
+get_number "REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY" && beam_reproc=$number
 
 
 #create log dir
