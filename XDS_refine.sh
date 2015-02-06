@@ -3,7 +3,7 @@
 # Script to refine data with refined geometry parameters from integration and scaling
 
 # Written by Donald Raymond [raymond@crystal.harvard.edu]
-# last edited January 2nd 2015
+# last edited January 6rd 2015
 #
 ##################################################################
 
@@ -24,6 +24,8 @@ correct spacegroup, refined geometry and fine-slicing of profiles
 AND/OR with refined values for beam divergence and mosaicity
 \n*********************************************************\n"
 }
+
+
 
 #Function to backup existing files
 function copyFiles {
@@ -90,13 +92,6 @@ function copyFiles {
 
 	if [ -e GXPARM.XDS ]; then
 		cp GXPARM.XDS reprocess/GXPARM.XDS_$1
-	else
-		echo -e "\nCannot find GXPARM.XDS\n"
-		exit 1
-	fi
-
-	if [ -e GXPARM.XDS ]; then
-		cp GXPARM.XDS reprocess/XPARM.XDS
 	else
 		echo -e "\nCannot find GXPARM.XDS\n"
 		exit 1
@@ -215,21 +210,21 @@ copyFiles ini
 #get stats table before reprocessing
 echo;stats "before refinement"
 
-#Loop for reprocessing without BEAM optimzation
-for i in $(seq -f "%02g" 1 $reproc); do
-	echo -e "Reprocessing with REFINED GEOMETRY AND FINE-SLICING OF PROFILES: Cycle $i of $(printf %02d $reproc)\n"
-	repro $i
-	stats "for cycle $i"
-	copyFiles repro_$i
+#Function to loop refinement runs
+function loop_refine {
+for x in $(seq -f "%02g" 1 $1); do
+    echo -e "Reprocessing with $2: Cycle $x of $(printf %02d $1)\n"
+    repro $x
+    stats "for cycle $x"
+    copyFiles repro_$x
 done
+}
+
+#Loop for reprocessing without BEAM optimzation
+loop_refine "$reproc" "REFINED GEOMETRY AND FINE-SLICING OF PROFILES" && i=$x
 
 #loop for reprocessing with BEAM optimization
-for j in $(seq -f "%02g" 1 $beam_reproc); do
-	echo -e "Reprocessing with REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY: Cycle $j of $(printf %02d $beam_reproc)\n"
-	repro_BEAM $j
-	stats "for cycle $j"
-	copyFiles BEAM_$j
-done
+loop_refine "$beam_reproc" "REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY" && j=$x
 
 #Move log file to reprocess folder
 mv Reprocessing.log reprocess/ 
