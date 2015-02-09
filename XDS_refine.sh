@@ -89,7 +89,7 @@ done
 
 #Function to run XDS
 function run_xds {
-if [[ "$input_mode" = "s" ]] || [[ "$input_mode" = "S" ]]; then
+if [[ "$input_mode" = [sS] ]]; then
 	echo -e "Running XDS in silent mode\n"
 	xds_par > log/Reprocess_noBEAM_$1.log
 else
