@@ -99,7 +99,7 @@ It will then convert the mmCIF to an MTZ file and calculate phases
 '
 
 #get pdb id from user
-if [[ $# == 0 ]]; then
+if [[ $# == 0 ]] || [[ ${#1} != 4 ]]; then
 	read -p "Please enter a valid PDB ID (e.g. 1yks): " -n 4 -e pdb_id
 else
 	pdb_id="$1"
