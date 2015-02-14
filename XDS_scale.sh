@@ -27,17 +27,17 @@ function res_shells {
 
 #get stats table from XSCALE.LP
 function getStats {
-		echo "Scaling statistics from XSCALE.LP";echo
-		egrep -A $res  "SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE" XSCALE.LP
-		egrep -B 2 -A 2 "REFLECTIONS REJECTED" XSCALE.LP
+	echo "Scaling statistics from XSCALE.LP";echo
+	egrep -A $res  "SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE" XSCALE.LP
+	egrep -B 2 -A 2 "REFLECTIONS REJECTED" XSCALE.LP
 }
 
 #get stats table from CORRECT.LP
 #function to get scaling statisticss table
 function statsCorrect {
 	echo "Scaling statistics from CORRECT.LP";echo
-		egrep -B 25 "WILSON STATISTICS OF DATA SET" CORRECT.LP | egrep -A 21  "SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE"
-		}
+	egrep -B 25 "WILSON STATISTICS OF DATA SET" CORRECT.LP | egrep -A 21  "SUBSET OF INTENSITY DATA WITH SIGNAL/NOISE"
+}
 
 #function to ask for user input
 
@@ -56,9 +56,7 @@ echo # just a final linefeed, optics...
 return $retval
 }
 
-
 #function to get output file name
-
 
 ############
 
@@ -204,7 +202,6 @@ while [[ "$for_test" = "fail" ]]; do
 	esac
 done
 
-#echo "OUTPUT_FILE=$output $format" >> XDSCONV.INP
 echo "OUTPUT_FILE=temp.hkl $format" >> XDSCONV.INP
 
 #Ask user about test set
