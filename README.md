@@ -18,6 +18,9 @@ The script downloads the PDB and sf.mmCIF files from the PDB. It then converts t
 
 After running the script the PDB and MTZ files can be opened in COOT, PyMOL to visualize the maps and model. To get the maps and PDB into O use the makeO.sh script described below.
 
+## PDB_ideal.sg
+The purpose of this script is to idealize a model using refmac5. The script takes a PDB file as input and output a PDB with the idealize model. No MTZ file is required. I use this script before refining low resolution structures to help the refinement program out.
+
 ## makeO.sh
 
 The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the [O graphics program](http://xray.bmc.uu.se/alwyn/TAJ/Home.html). This script is fully automated an only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
