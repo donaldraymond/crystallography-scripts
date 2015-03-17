@@ -8,7 +8,7 @@
 #clear screen
 clear
 
-#check is sftools and fft are installed
+#check if refmac5 is installed
 if hash refmac5 2>/dev/null; then
 	echo -e "\nFound refmac5...continuing with script\n"
 else
@@ -18,26 +18,20 @@ fi
 
 if [[ "$1" = *.pdb ]] ;then
 	pdbin=`basename $1 .pdb`
-	echo -e "PDB is "$1"\n"
+	echo -e "PDB is "$1""
 else 
 	echo -e "Invalid input or no PDB specified\n"
+	exit 1
 fi
 
 #Function to get number of cycles
 function get_number {
-check="fail"
-while [[ "$check" = "fail" ]]; do
-	echo -n "Number of cycles: "
+numbers=""
+while ! [ "$number" -eq "$number" ] 2> /dev/null || [ "$number" -lt "1" ] 2> /dev/null ; do
+	echo -ne "\nNumber of cycles: "
     read number
-
-    if ! [ "$number" -eq "$number" ] 2> /dev/null || [ "$number" -lt "0" ] 2> /dev/null; then
-        echo -e "\nInvalid input\n"
-    else 
-        echo -e "\nRunning $number cycles"
-        check="pass"
-    fi  
 done
-echo
+echo -e "\nRunning $number cycles\n"
 }
 
 #function to run refmac idealized
