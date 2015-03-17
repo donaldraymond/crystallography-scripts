@@ -17,8 +17,8 @@ else
 fi
 
 if [[ "$1" = *.pdb ]] ;then
-	pdbin=$1
-	echo -e "PDB is $pdbin\n"
+	pdbin=`basename $1 .pdb`
+	echo -e "PDB is "$1"\n"
 else 
 	echo -e "Invalid input or no PDB specified\n"
 fi
@@ -42,7 +42,7 @@ echo
 
 #function to run refmac idealized
 function idealize {
-refmac5 XYZIN "$pdbin" XYZOUT idealized_$pdbin << eof
+refmac5 XYZIN "$pdbin.pdb" XYZOUT "$pdbin"_ideal.pdb << eof
 make -
     hydrogen ALL -
     hout NO -
