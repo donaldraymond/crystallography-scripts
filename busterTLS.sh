@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# a script to convert phenix TLS formats for use in buster
+# a script to convert phenix and refmac formatted TLS file for use in buster
 
 #for debugging
 #set -x
@@ -55,7 +55,7 @@ function phenixTLS {
 }
 
 
-#function to extract info from phenix formatted TLS file
+#function to extract info from refmac formatted TLS file
 function refmacTLS {
 	#ignore line without tls=
 	if ! [[ $line =~ ^"RANGE  '" ]]; then 
