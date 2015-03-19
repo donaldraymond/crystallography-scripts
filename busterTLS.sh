@@ -57,7 +57,7 @@ function phenixTLS {
 
 #function to extract info from refmac formatted TLS file
 function refmacTLS {
-	#ignore line without tls=
+	#ignore line without RANGE  '
 	if ! [[ $line =~ ^"RANGE  '" ]]; then 
 		continue
 	fi 
