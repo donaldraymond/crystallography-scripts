@@ -92,4 +92,4 @@ while read line; do
 done < $tlsfile
 
 #Finish script
-echo -e "Script finish\n"
+echo -e "Created Buster.TLSMD file\n"
