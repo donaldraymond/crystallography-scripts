@@ -30,6 +30,16 @@ fi
 
 #make buster file
 >Buster.TLSMD
+	
+#Function to get number of ranges and write to Buster.TLSMD
+function formatBuster {
+	# get current number of ranges
+	numb=`grep "NOTE BUSTER_TLS_SET tls"$chain"" Buster.TLSMD | wc -l`
+
+	#output line to Buster.txt
+	echo "NOTE BUSTER_TLS_SET tls"$chain"`expr $numb + 1` {$chain|$start - $end}" >>Buster.TLSMD
+}
+
 
 #function to extract info from phenix formatted TLS file
 function phenixTLS {
@@ -47,11 +57,8 @@ function phenixTLS {
 	#get end 
 	end=`echo "$line" | awk -F' |:' '{print $6}' | awk -F'\)' '{print $1}' 2>/dev/null`
 
-	# get current number of ranges
-	numb=`grep "NOTE BUSTER_TLS_SET tls"$chain"" Buster.TLSMD | wc -l`
-
-	#output line to Buster.txt
-	echo "NOTE BUSTER_TLS_SET tls"$chain"`expr $numb + 1` {$chain|$start - $end}" >>Buster.TLSMD 
+	#format for buster
+	formatBuster
 }
 
 
@@ -71,11 +78,8 @@ function refmacTLS {
 	#get end 
 	end=`echo "$line" | awk -F' ' '{print $5}' | awk -F"." '{print $1}'`
 
-	# get current number of ranges
-	numb=`grep "NOTE BUSTER_TLS_SET tls"$chain"" Buster.TLSMD | wc -l`
-
-	#output line to Buster.txt
-	echo "NOTE BUSTER_TLS_SET tls"$chain"`expr $numb + 1` {$chain|$start - $end}" >>Buster.TLSMD 
+	#format for buster
+	formatBuster
 }
 
 #Run right function
