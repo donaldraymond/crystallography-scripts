@@ -1,6 +1,6 @@
 # Scripts for X-ray crystallography
 
-These are a collection of scripts that I wrote to help with specific tasts in X-ray crystallography. I started this project to learn bash scripting and will push updates whenever I can.
+These are a collection of scripts that I wrote to help with specific tasks in X-ray crystallography. I started this project to learn bash scripting and will push updates whenever I can.
 
 Most of the scripts in this git repository require the [CCP4](http://www.ccp4.ac.uk) package. I try to use CCP4 programs exclusively to ensure general compatibility. When I use program outside of the CCP4 suite, I run a check to see if that program is installed before running the script.
 
