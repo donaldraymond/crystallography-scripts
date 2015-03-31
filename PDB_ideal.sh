@@ -36,7 +36,7 @@ echo -e "\nRunning $number cycles\n"
 
 #function to run refmac idealized
 function idealize {
-refmac5 XYZIN "$pdbin.pdb" XYZOUT "$pdbin"_ideal.pdb << eof
+refmac5 XYZIN "$pdbin.pdb" XYZOUT temp.pdb << eof
 make -
     hydrogen ALL -
     hout NO -
@@ -85,6 +85,13 @@ get_number
 
 #Run function to idealize PDB
 idealize 
+
+#replace LINKR tags with LINK
+echo -e "\nChecking for and removing LINKR records"
+sed 's/LINKR/LINK /g' <temp.pdb  >"$pdbin"_ideal.pdb
+
+#clean up
+rm -rf temp.pdb 2> /dev/null
 
 #Finish script
 echo -e "\nEnd of Script\n"
