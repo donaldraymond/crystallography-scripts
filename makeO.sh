@@ -114,11 +114,6 @@ function mapO {
 	echo >> on_startup
 }
 
-#function to get space group name
-function spacegroup {
- grep "Space group name" sftoolsread.txt | awk -F ":" '{print $2}' | awk '{ gsub (" ", "", $0); print}'
-}
-
 #function to append map name to o_files
 function redraw {
 echo "fm_draw $1" >> $O_dir/next_water
@@ -165,7 +160,7 @@ res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsr
 echo -e "\n\tHigh resolution limit is $res_high\n"
 
 #get space group name
-spaceGroupName=$(spacegroup)
+spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsread.txt`"
 echo -e "The space group is $spaceGroupName \n"
 
 #Find map coefficients
