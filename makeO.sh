@@ -212,7 +212,7 @@ fi
 echo '! generates nearby symmetry atoms
 symm_sph ;; 10.0' >> $O_dir/gen_symmetry
 
-echo '.MENU                     T          48         40
+echo '.MENU                     T          47         40
 colour_text red
 STOP
 colour_text white
@@ -256,7 +256,6 @@ Trig_reset
 Trig_refresh
 colour_text turquoise
 <Gen Symmetry> @.O_files/gen_symmetry
-<Redraw Solv> @.O_files/redraw_solv
 <Redraw Map> @.O_files/redraw_map
 <Next Water> @.O_files/next_water
 <Next ca> @.O_files/next_ca
@@ -275,13 +274,6 @@ echo '! centers screen on next alpha-carbon and redraws
 centre_previous atom_name = ca' >> $O_dir/previous_ca
 
 echo "! redraws maps defined in on_startup" > $O_dir/redraw_map
-
-echo '! redraws solvent molecules and protein
-! useful after using add_water command
-! rename solv and hica as required
-mol solv
-zo ;end
-mol hica' >> $O_dir/redraw_solv
 
 echo '.ID_TEMPLATE         T          2         40
 %Restyp %RESNAM %ATMNAM
