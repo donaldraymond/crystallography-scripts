@@ -18,6 +18,12 @@ The script downloads the PDB and sf.mmCIF files from the PDB. It then converts t
 
 After running the script the PDB and MTZ files can be opened in COOT, PyMOL to visualize the maps and model. To get the maps and PDB into O use the makeO.sh script described below.
 
+## PDBget.sh
+
+This script just downloads a PDB file from the Protein Data Bank.
+
+The user can either pass the script a PDB ID in the command line e.g. `PDBget.sh 1yks` or input the ID when asked.
+
 ## PDB_ideal.sh
 The purpose of this script is to idealize the geometry of a model using refmac5. The script takes a PDB file as input and output a PDB with the idealize model. No MTZ file is required. I use this script before refining low resolution structures to help the refinement program out.
 
