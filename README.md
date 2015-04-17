@@ -32,7 +32,7 @@ This script converts phenix or refmac TLS input files to buster format. I use th
 
 ## makeO.sh
 
-The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the [O graphics program](http://xray.bmc.uu.se/alwyn/TAJ/Home.html). This script is fully automated an only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
+The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the [O graphics program](http://xray.bmc.uu.se/alwyn/TAJ/Home.html). This script is fully automated and only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
 
 The script using fft for generating the maps and then uses mapmask to normalize the map. It creates an on_startup O macro file with the map and model already added.
 
