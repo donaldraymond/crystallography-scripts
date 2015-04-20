@@ -29,7 +29,7 @@ fi
 
 #function to download file
 function get_file {
-curl -O -f "http://www.rcsb.org/pdb/files/"$pdb_id""$1""
+curl -O -sf "http://www.rcsb.org/pdb/files/"$pdb_id""$1""
 }
 
 #function to get cell dimensions
@@ -106,18 +106,18 @@ else
 fi
 
 #get cif-file from PDB
-echo -e "\nGetting $pdb_id structure factor file from PDB\n"
+echo -e "Getting $pdb_id structure factor file from PDB\n"
 get_file "-sf.cif"
 
 #if cannot download the file, end script
 if [[ "$?" != "0" ]] ; then
-    echo -e "\nCould not download the cif file. Please check PDB ID and/or online status\n"
+    echo -e "Could not download the cif file. Please check PDB ID and/or online status\n"
     exit 1
 fi
 cif_file="$pdb_id-sf.cif"
 
 #get pdb file pro
-echo -e "\nGetting $pdb_id coordinate file from PDB\n"
+echo -e "Getting $pdb_id coordinate file from PDB\n"
 get_file ".pdb"
 pdb_file="$pdb_id.pdb"
 
@@ -129,7 +129,7 @@ alpha=$(get_cell "angle_alpha")
 beta=$(get_cell "angle_beta")
 gamma=$(get_cell "angle_gamma")
 
-echo -e "\nUnit cell constants are: $a $b $c $alpha $beta $gamma"
+echo -e "Unit cell constants are: $a $b $c $alpha $beta $gamma"
 
 #get space group
 space_group=`grep "symmetry.space_group_name" $cif_file | awk -F "['\"]" '{print $2;exit}' | awk '{ gsub (" ", "", $0); print}'`
