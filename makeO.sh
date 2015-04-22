@@ -166,7 +166,7 @@ echo -e "\nRunning sftools"
 read_mtz
 
 #Find map coefficients
-echo -e "Finding map coefficients\n"
+echo -e "\nFinding map coefficients\n"
 
 if  $(grep -q FDM sftoolsread.txt); then
     echo -e "\tDM map coefficients found\n"
@@ -206,7 +206,7 @@ if askuser; then
 	#get new resolution from user
 	new_res="0"
 	while [[ $new_res < "$res_high" ]];do
-		echo -en "\nHigh resolution of new map: "
+		echo -en "\nResolution limit of new map: "
 		read new_res
 	done
 	#set high resolution of map
