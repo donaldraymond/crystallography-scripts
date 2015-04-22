@@ -87,6 +87,20 @@ else
 fi
 }
 
+#Ask user for resolution
+function askuser {
+echo -n "Make a lower resolution map? (Y/N) "
+while read -r -n 1 -s answer;do
+  if [[ $answer = [YyNn] ]]; then
+    [[ $answer = [Yy] ]] && retval=0
+    [[ $answer = [Nn] ]] && retval=1
+    break
+  fi  
+done
+echo
+return $retval
+}
+
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
 #make the map
@@ -151,18 +165,6 @@ get_file "$mtzfile" mtz && mtzfile="$loc_file"
 echo -e "\nRunning sftools"
 read_mtz
 
-#get the resolution 
-echo -e "\nGetting resolution limits"
-res_low="`awk '/The resolution range in the data base is/ {print $9}' sftoolsread.txt`"
-echo -e "\n\tLow resolution limit is $res_low"
-
-res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
-echo -e "\n\tHigh resolution limit is $res_high\n"
-
-#get space group name
-spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsread.txt`"
-echo -e "The space group is $spaceGroupName \n"
-
 #Find map coefficients
 echo -e "Finding map coefficients\n"
 
@@ -183,13 +185,38 @@ elif  $(grep -q 2FOFCWT sftoolsread.txt); then
 	map_coef=2FO
 else
 	echo -e "\tNo known map coefficients found\n\n\tSend mtz to raymond@crystal.harvard.edu to update this script\n"
-	exit 1
+	exit
+fi
+
+#get the resolution 
+echo -e "Getting resolution limits"
+res_low="`awk '/The resolution range in the data base is/ {print $9}' sftoolsread.txt`"
+echo -e "\n\tLow resolution limit is $res_low"
+
+res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
+echo -e "\n\tHigh resolution limit is $res_high\n"
+
+
+#get space group name
+spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsread.txt`"
+echo -e "The space group is $spaceGroupName \n"
+
+#Ask user about lower resolution map
+if askuser; then
+	#get new resolution from user
+	new_res="0"
+	while [[ $new_res < "$res_high" ]];do
+		echo -en "\nHigh resolution of new map: "
+		read new_res
+	done
+	#set high resolution of map
+	res_high=$new_res
 fi
 
 #Ask user for map prefix
 mapName=
 while [[ $mapName = "" ]];do
-	echo -n "Prefix for output map file: " 
+	echo -en "\nPrefix for output map file: " 
 	read mapName
 done
 

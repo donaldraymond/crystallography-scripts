@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 #######################################################
 
@@ -8,7 +8,7 @@
 #12/19/14 initial release
 #01/14/15 Bug fix
 
-last_update="January 14 2015"
+last_update="April 22 2015"
 
 #######################################################
 #for begugging 
@@ -42,6 +42,20 @@ sftools <<EOF | tee sftoolsread.txt
 EOF
 }
 
+#Ask user for resolution
+function askuser {
+echo -n "Make a lower resolution map? (Y/N) "
+while read -r -n 1 -s answer;do
+  if [[ $answer = [YyNn] ]]; then
+    [[ $answer = [Yy] ]] && retval=0
+    [[ $answer = [Nn] ]] && retval=1
+    break
+  fi  
+done
+echo
+return $retval
+}
+
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
 fft HKLIN $1 MAPOUT $2 << eof > /dev/null
@@ -56,11 +70,6 @@ eof
 mapmask mapin $2  mapout $2  << EOF > /dev/null
 SCALE SIGMA
 EOF
-}
-
-#function to get space group name
-function spacegroup {
- grep "Space group name" sftoolsread.txt | awk -F ":" '{print $2}' | awk '{ gsub (" ", "", $0); print}'
 }
 
 # Echo purpose of script
@@ -98,18 +107,6 @@ fi
 echo -e "\nRunning sftools"
 read_mtz
 
-#get the resolution 
-echo -e "\nGetting resolution limits"
-res_low="`awk '/The resolution range in the data base is/ {print $9}' sftoolsread.txt`"
-echo -e "\n\tLow resolution limit is $res_low"
-
-res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
-echo -e "\n\tHigh resolution limit is $res_high\n"
-
-#get space group name
-spaceGroupName=$(spacegroup)
-echo -e "The space group is $spaceGroupName \n"
-
 #Find map coefficients
 echo -e "Finding map coefficients\n"
 
@@ -133,10 +130,35 @@ else
 	exit
 fi
 
+#get the resolution 
+echo -e "Getting resolution limits"
+res_low="`awk '/The resolution range in the data base is/ {print $9}' sftoolsread.txt`"
+echo -e "\n\tLow resolution limit is $res_low"
+
+res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
+echo -e "\n\tHigh resolution limit is $res_high\n"
+
+
+#get space group name
+spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsread.txt`"
+echo -e "The space group is $spaceGroupName \n"
+
+#Ask user about lower resolution map
+if askuser; then
+	#get new resolution from user
+	new_res="0"
+	while [[ $new_res < "$res_high" ]];do
+		echo -en "\nHigh resolution of new map: "
+		read new_res
+	done
+	#set high resolution of map
+	res_high=$new_res
+fi
+
 #Ask user for map prefix
 mapName=
 while [[ $mapName = "" ]];do
-	echo -n "Prefix for output map file: " 
+	echo -en "\nPrefix for output map file: " 
 	read mapName
 done
 
