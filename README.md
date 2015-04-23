@@ -38,6 +38,11 @@ The script using fft for generating the maps and then uses mapmask to normalize 
 
 Run like this `makeO.sh file.mtz file.pdb`, or simple run `makeO.sh` and follow instructions.
 
+
+## pdb2O.sh 
+
+This script combines the functionality of grabPDB.sh and makeO.sh. Essentially, it will download coordinate and reflection files from the PDB, generate maps and create an O macro to get the maps and PDB into O upon launch. Just run the script with a PDB ID and sit back and relax.
+
 ## makemap.sh
 
 This is a striped-down version of the makeO.sh script. All it does is make maps from an mtz with map coefficients.
