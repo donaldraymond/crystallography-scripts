@@ -333,7 +333,7 @@ echo -e "pdb_read $pdb_file $pdb_id ; ; ;" >> on_startup
 
 #on_start file created
 echo -e "\nAn on_startup file has been created for use in ONO.
-\nThe PDB and maps will be loaded into ONO upon launch.
+\nThe PDB and maps will be loaded into O upon launch.
 "
 
 #clean up
