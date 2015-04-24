@@ -8,7 +8,7 @@
 if hash cif2mtz 2>/dev/null && hash refmac5 2>/dev/null && hash sftools 2>/dev/null && hash fft 2>/dev/null; then
 	echo -e "\nFound cif2mtz, refmac5, sftools and fft...continuing with script"
 else
-	echo -e "\Found cif2mtz, refmac5, sftools and fft are required to run this script\n"
+	echo -e "\ncif2mtz, refmac5, sftools and fft are required to run this script\n"
 	exit 1
 fi
 
