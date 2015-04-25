@@ -146,6 +146,7 @@ echo "fm_draw $1" >> $O_dir/redraw_map
 #get pdb id from user
 if [[ $# == 0 ]] || [[ ${#1} != 4 ]]; then
 	read -p "Please enter a valid PDB ID (e.g. 1yks): " -n 4 -e pdb_id
+	echo
 else
 	pdb_id="$1"
 fi
