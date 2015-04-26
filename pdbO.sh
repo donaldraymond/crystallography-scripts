@@ -5,10 +5,10 @@
 ##################################################################
 
 #check if cif2mtz and refmac5 are installed
-if hash cif2mtz 2>/dev/null && hash refmac5 2>/dev/null && hash sftools 2>/dev/null && hash fft 2>/dev/null; then
-	echo -e "\nFound cif2mtz, refmac5, sftools and fft...continuing with script"
+if hash curl 2>/dev/null && hash cif2mtz 2>/dev/null && hash refmac5 2>/dev/null && hash sftools 2>/dev/null && hash fft 2>/dev/null; then
+	echo -e "\nFound curl, cif2mtz, refmac5, sftools and fft...continuing with script"
 else
-	echo -e "\ncif2mtz, refmac5, sftools and fft are required to run this script\n"
+	echo -e "\ncurl, cif2mtz, refmac5, sftools and fft are required to run this script\n"
 	exit 1
 fi
 
@@ -34,7 +34,6 @@ m_paint="1.14 -0.34"
 den1="1.06 0.98"
 den2="1.06 0.65"
 den3="1.06 0.32"
-den4=""
 
 #############################
 #Functions
@@ -203,24 +202,17 @@ calc_mapcoef
 #cleanup
 rm temp* "$cif_file" 2> /dev/null
 
-########
-
-#from makeO
 mtzfile="$pdb_id.mtz"
 
 read_mtz
 
 #get the resolution 
-#echo -e "Getting resolution limits"
 res_low="`awk '/The resolution range in the data base is/ {print $9}' sftoolsread.txt`"
-#echo -e "\n\tLow resolution limit is $res_low"
 
 res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
-#echo -e "\n\tHigh resolution limit is $res_high\n"
 
 #get space group name
 spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsread.txt`"
-#echo -e "The space group is $spaceGroupName \n"
 
 #make .O_files folder
 O_dir=".O_files"
@@ -318,7 +310,6 @@ echo -e "! display map in RMS units and not absolute" >> on_startup
 echo -e "d_s_d .fm_real 2 2 1\n" >> on_startup
 
 #make ccp4 map
-
 echo -e "\nMaking and normalizing CCP4 map(s)"
 make_map $mtzfile $pdb_id-2FoFc.ccp4 $res_low $res_high FWT PHWT 
 make_map $mtzfile $pdb_id-FoFc.ccp4 $res_low $res_high DELFWT PHDELWT
