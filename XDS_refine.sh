@@ -197,4 +197,4 @@ stats "after Reprocessing with REFINED GEOMETRY AND FINE-SLICING OF PROFILES" "r
 stats "after Reprocessing with REFINED VALUES FOR BEAM DIVERGENCE AND MOSAICITY" "reprocess/" "_BEAM_$j"
 
 #end script
-echo -e "\nScript finished\n"
+echo -e "\nScript finished (CPU time: $SECONDS seconds)\n"
