@@ -79,8 +79,8 @@ fi
 
 #Function to loop refinement runs
 function loop_refine {
-for x in $(seq -f "%02g" 1 $1); do
-    echo -e "Reprocessing with $2: Cycle $x of $(printf %02d $1)\n"
+for x in $(seq -w 1 $1); do
+    echo -e "Reprocessing with $2: Cycle $x of $1 \n"
     repro $x
     stats "for cycle $x"
     copyFiles "$3"_$x
