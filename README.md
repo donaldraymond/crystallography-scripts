@@ -61,7 +61,7 @@ This is a bash script to reprocess data with XDS using the correct spacegroup, r
 
 ### XDS_IndexWithGoodSpots.sh
 
-Sometime XDS stop because < 50% of spots get indexed. This can be due to numerous reasons including split lattice. This script reindexes using only the good spots in the SPOTS.XDS file.
+Sometime XDS stops because < 50% of spots get indexed. This can be due to numerous reasons including split lattice. This script reindexes using only the good spots in the SPOTS.XDS file.
 
 ### XDS_scale.sh
 
