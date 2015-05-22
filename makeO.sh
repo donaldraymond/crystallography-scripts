@@ -180,9 +180,12 @@ elif  $(grep -q FWT sftoolsread.txt) && $(grep -q DELFWT sftoolsread.txt); then
 elif  $(grep -q FWT sftoolsread.txt); then
     echo -e "\tmap coefficients found\n"
 	map_coef=FWT
-elif  $(grep -q 2FOFCWT sftoolsread.txt); then
+elif  $(grep -q 2FOFCWT sftoolsread.txt) && $(grep -q FWT sftoolsread.txt); then
     echo -e "\t2FoFc and FoFc map coefficients found\n"
 	map_coef=2FO
+elif $(grep -q 2FOFCWT sftoolsread.txt) && ! $(grep -q FWT sftoolsread.txt); then
+    echo -e "\t2FoFc map coefficients found\n"
+	map_coef=2FO_only
 else
 	echo -e "\tNo known map coefficients found\n\n\tSend mtz to raymond@crystal.harvard.edu to update this script\n"
 	exit
@@ -366,6 +369,11 @@ case $map_coef in
 				mapO $mapName-2FoFc.ccp4 2FoFc 1.1 slate_blue 3 "$den1" 
 				redraw FoFc+
 				redraw FoFc-
+				redraw 2FoFc
+					;;
+	2FO_only)	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
+				echo -e "\n\tCreated $mapName-2FoFc.ccp4"
+				mapO $mapName-2FoFc.ccp4 2FoFc 1.1 slate_blue 1 "$den1" 
 				redraw 2FoFc
 					;;
 
