@@ -17,9 +17,10 @@
 #01/14/15 Added function to get pdb and mtz files
 #01/19/15 Removed Duke stereochemistry files due to broken bonds
 #01/22/15 Added feature to read old/residue_dict.odb
-#01/23/14 Added feature to hide O files
+#01/23/15 Added feature to hide O files
+#05/21/15 Added check for only 2FoFc map
 
-last_update="January 23 2015"
+last_update="May 21 2015"
 
 #######################################################
 

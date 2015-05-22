@@ -7,8 +7,9 @@
 #List of changes
 #12/19/14 initial release
 #01/14/15 Bug fix
+#05/21/15 check for only 2FoFc map
 
-last_update="April 22 2015"
+last_update="May 21 2015"
 
 #######################################################
 #for begugging 
@@ -125,6 +126,9 @@ elif  $(grep -q FWT sftoolsread.txt); then
 elif  $(grep -q 2FOFCWT sftoolsread.txt); then
     echo -e "\t2FoFc and FoFc map coefficients found\n"
 	map_coef=2FO
+elif $(grep -q 2FOFCWT sftoolsread.txt) && ! $(grep -q FWT sftoolsread.txt); then
+    echo -e "\t2FoFc map coefficients found\n"
+	map_coef=2FO_only
 else
 	echo -e "\tNo known map coefficients found\n\n\tSend mtz to raymond@crystal.harvard.edu to update this script\n"
 	exit
@@ -185,6 +189,10 @@ case $map_coef in
 	2FO)		make_map $filename $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
 				make_map $filename $mapName-FoFc.ccp4 $res_low $res_high FOFCWT PHFOFCWT 
 				echo -e "\n\tCreated $mapName-2FoFc.ccp4 and $mapName-FoFc.ccp4"
+					;;
+	
+	2FO_only)	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
+				echo -e "\n\tCreated $mapName-2FoFc.ccp4"
 					;;
 
 	*)			echo -e "\nUnknow map coefficients labels"
