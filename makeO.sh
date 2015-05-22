@@ -356,7 +356,7 @@ case $map_coef in
 				redraw FEM
 					;;
 	
-	FWT)		make_map $mtzfile $mapName.ccp4 $res_low $res_high FWT 
+	FWT)		make_map $mtzfile $mapName.ccp4 $res_low $res_high FWT PHWT 
 				echo -e "\n\tCreated $mapName.ccp4"
 				mapO $mapName.ccp4 Den 1.1 slate_blue 1 "$den1"
 				redraw Den

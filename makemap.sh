@@ -182,7 +182,7 @@ case $map_coef in
 				echo -e "\n\tCreated $mapName-FEM.ccp4"
 					;;
 	
-	FWT)		make_map $filename $mapName.ccp4 $res_low $res_high FWT 
+	FWT)		make_map $filename $mapName.ccp4 $res_low $res_high FWT PHWT 
 				echo -e "\n\tCreated $mapName.ccp4"
 					;;
 	
