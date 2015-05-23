@@ -39,7 +39,8 @@ sftools <<EOF | tee sftoolsread.txt
  read $filename
  complete
  list
- quit
+ end
+ yes
 EOF
 }
 
@@ -123,10 +124,10 @@ elif  $(grep -q FWT sftoolsread.txt) && $(grep -q DELFWT sftoolsread.txt); then
 elif  $(grep -q FWT sftoolsread.txt); then
     echo -e "\tmap coefficients found\n"
 	map_coef=FWT
-elif  $(grep -q 2FOFCWT sftoolsread.txt); then
+elif  $(grep -q 2FOFCWT sftoolsread.txt) && $(grep -q FOFCWT sftoolsread.txt); then
     echo -e "\t2FoFc and FoFc map coefficients found\n"
 	map_coef=2FO
-elif $(grep -q 2FOFCWT sftoolsread.txt) && ! $(grep -q FWT sftoolsread.txt); then
+elif $(grep -q 2FOFCWT sftoolsread.txt) && ! $(grep -q FOFCWT sftoolsread.txt); then
     echo -e "\t2FoFc map coefficients found\n"
 	map_coef=2FO_only
 else
