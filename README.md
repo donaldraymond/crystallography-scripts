@@ -51,6 +51,10 @@ This is a striped-down version of the makeO.sh script. All it does is make maps 
 
 This script generates the O commands to insert residues into the database. It is most useful during building.
 
+## sacom.sh
+
+This is a script to make a simulated annealing composite omit map using phenix.autobuild. Run the script by passing a PDB and an MTZ file. The sacom map is less biased than a 2FoFc map and is used to validate the model or fix bad regions.
+
 ## XDS scripts
 
 The following scripts deal specifically with [XDS](http://xds.mpimf-heidelberg.mpg.de).
