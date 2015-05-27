@@ -45,7 +45,7 @@ This script combines the functionality of grabPDB.sh and makeO.sh. Essentially, 
 
 ## makemap.sh
 
-This is a striped-down version of the makeO.sh script. All it does is make maps from an mtz with map coefficients.
+This is a stripped-down version of the makeO.sh script. All it does is make maps from an mtz with map coefficients.
 
 ## O_insertSeq.sh
 
