@@ -9,7 +9,7 @@
 clear
 
 #delete existing mutate_insert.txt
-ls mutate_insert.txt > /dev/null 2>&1 && rm mutate_insert.txt
+> mutate_insert.txt
 
 echo '
 ***************************************************************
