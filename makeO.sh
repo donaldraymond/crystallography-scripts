@@ -19,26 +19,26 @@
 #01/22/15 Added feature to read old/residue_dict.odb
 #01/23/15 Added feature to hide O files
 #05/21/15 Added check for only 2FoFc map
+#05/27/15 Simplified script
 
-last_update="May 21 2015"
+last_update="May 27 2015"
 
 #######################################################
 
-#for begugging 
+#for debugging 
 #set -x
 
-#check is sftools and fft are installed
+#check if sftools and fft are installed
 if hash sftools 2>/dev/null && hash fft 2>/dev/null; then
 	echo -e "\nFound sftools and fft...continuing with script"
 else
-	echo -e "\nsftools and fft are required to run this script\n"
+	echo -e "\nThis script requires sftools and fft\n"
 	exit 1
 fi
 
 #clear screen
 clear
 
-#list of variables
 #variables to hold window positions
 m_user="-1.66 0.56"
 m_object="-1.66 0.94"
@@ -66,41 +66,17 @@ sftools <<EOF | tee sftoolsread.txt
 EOF
 }
 
-#function to get file 1:file, 2-file extension
-function get_file {
-loc_file="null"
-if  [ -f "$1" ] ;then
-	loc_file="$1"
-	echo -e "\nFound $1"
-else
-	while [ ! -f "$loc_file" ]; do
-		echo -e "\nList of $2 files in the current directory\n"
-		echo -e "*********************\n"
- 		echo -e "`ls *.$2 2> /dev/null`\n"
-		echo -e "*********************\n"
-		read -p "Please enter a valid $2 filename (e.g. file.$2): " loc_file
-
-		if [ ! -f "$loc_file" ]; then
-			echo -e "\nCould not find file called $loc_file"
-		fi
-
+#function to get PDB object name
+function obj_name {
+	echo -e "\nI've found "$pdbfile" \n"
+	read -p "What is the PDB object's name? [obj] " -n 6 pdbName
+	while [[ -z "$pdbName" ]]; do
+		pdbName=obj
 	done
-	echo -e "\nFound $loc_file"
-fi
-}
 
-#Ask user for resolution
-function askuser {
-echo -n "Make a lower resolution map? (Y/N) "
-while read -r -n 1 -s answer;do
-  if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && retval=0
-    [[ $answer = [Nn] ]] && retval=1
-    break
-  fi  
-done
-echo
-return $retval
+	echo -e "! Read pdb files" >> on_startup
+	echo -e "pdb_read $pdbfile $pdbName ; ; ;" >> on_startup
+	extra=" and PDB file"
 }
 
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
@@ -162,7 +138,14 @@ do
 done
 
 #get mtz file
-get_file "$mtzfile" mtz && mtzfile="$loc_file"
+if [[ -z "$mtzfile" ]]; then
+	echo -e "\nMTZs in current directory: `ls -m  *.mtz 2>/dev/null` \n"
+	read -p "Load MTZ file: " mtzfile
+	while [ ! -f "$mtzfile" ]; do
+		echo
+		read -p "I need a valid MTZ file: " mtzfile
+	done
+fi
 
 echo -e "\nRunning sftools"
 read_mtz
@@ -198,31 +181,25 @@ echo -e "Getting resolution limits"
 res_low="`awk '/The resolution range in the data base is/ {print $9}' sftoolsread.txt`"
 echo -e "\n\tLow resolution limit is $res_low"
 
-res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
-echo -e "\n\tHigh resolution limit is $res_high\n"
+reso_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
+echo -e "\n\tHigh resolution limit is $reso_high\n"
 
 
 #get space group name
 spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsread.txt`"
 echo -e "The space group is $spaceGroupName \n"
 
-#Ask user about lower resolution map
-if askuser; then
-	#get new resolution from user
-	new_res="0"
-	while [[ $new_res < "$res_high" ]];do
-		echo -en "\nResolution limit of new map: "
-		read new_res
-	done
-	#set high resolution of map
-	res_high=$new_res
-fi
+#Ask user about map resolution
+read -p "Resolution of map? [$reso_high] " res_high
+while [[ -z "$res_high" ]]; do
+	res_high=$reso_high
+done
 
 #Ask user for map prefix
-mapName=
-while [[ $mapName = "" ]];do
-	echo -en "\nPrefix for output map file: " 
-	read mapName
+echo
+read -p "Prefix for output map file [map]: " mapname
+while [[ -z $mapName ]]; do
+	mapName=map
 done
 
 ##################################################
@@ -242,7 +219,7 @@ fi
 
 #make o macro files
 echo '! generates nearby symmetry atoms
-symm_sph ;; 10.0' >> $O_dir/gen_symmetry
+symm_sph ;; 10.0' > $O_dir/gen_symmetry
 
 echo '.MENU                     T          47         40
 colour_text red
@@ -291,25 +268,25 @@ colour_text turquoise
 <Redraw Map> @.O_files/redraw_map
 <Next Water> @.O_files/next_water
 <Next ca> @.O_files/next_ca
-<Previous ca> @.O_files/previous_ca' >> $O_dir/menu_raymond.odb
+<Previous ca> @.O_files/previous_ca' > $O_dir/menu_raymond.odb
 
 echo '! centers screen on next alpha-carbon and redraw
 ! electron density maps as defined in on_startup
-centre_next atom_name = ca' >> $O_dir/next_ca
+centre_next atom_name = ca' > $O_dir/next_ca
 
 echo '! centers screen on next solvent molecule and
 ! redraws electron density maps as define in on_startup
-centre_next atom_name = o' >> $O_dir/next_water
+centre_next atom_name = o' > $O_dir/next_water
 
 echo '! centers screen on next alpha-carbon and redraws
 ! electron density maps as defined in on_startup
-centre_previous atom_name = ca' >> $O_dir/previous_ca
+centre_previous atom_name = ca' > $O_dir/previous_ca
 
 echo "! redraws maps defined in on_startup" > $O_dir/redraw_map
 
 echo '.ID_TEMPLATE         T          2         40
 %Restyp %RESNAM %ATMNAM
-residue_2ry_struc' >> $O_dir/resid.odb
+residue_2ry_struc' > $O_dir/resid.odb
 
 #make on_startup file
 echo -e "! read database files" > on_startup
@@ -385,40 +362,21 @@ case $map_coef in
 					;;
 esac
  
-#rm -rf sftoolsread.txt 2> /dev/null
-
 #Ask user for pdb file
-function askuser {
-echo;echo -n "Would you like to Load a pdb file? (Y/N) "
-while read -r -n 1 -s answer;do
-  if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && retval=0
-    [[ $answer = [Nn] ]] && retval=1
-    break
-  fi  
-done
-echo
-return $retval
-} 
-
-if askuser; then
-	#get pdb file
-	get_file "$pdbfile" pdb && pdbfile="$loc_file"
-		
-	#Ask user for pdb name
-	pdbName=""
-	while [[ $pdbName = "" ]];do
-		echo;echo -n "What is the PDB object's name? (6 or less characters): " 
-		read -n 6 -e pdbName
-	done
-
-	echo -e "\n! Read pdb files" >> on_startup
-	echo -e "pdb_read $pdbfile $pdbName ; ; ;" >> on_startup
-	extra=" and PDB file"
-
+if [[ -z "$pdbfile" ]]; then
+	echo -e "\nPDBs in current directory: `ls -m  *.pdb 2>/dev/null` \n"
+	read -p "Load PDB file [none] " pdbfile
+	if [[ -z "$pdbfile" ]]; then
+		extra=""
+	else
+		while [ ! -f "$pdbfile" ]; do
+			echo
+			read -p "I need a PDB file: " pdbfile
+		done
+		obj_name
+	fi
 else
-	echo -e "\n\n\tNot loading a PDB file"
-	extra=""
+	obj_name
 fi
 
 #on_start file created

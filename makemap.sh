@@ -9,17 +9,17 @@
 #01/14/15 Bug fix
 #05/21/15 check for only 2FoFc map
 
-last_update="May 21 2015"
+last_update="May 27 2015"
 
 #######################################################
-#for begugging 
+#for debugging 
 #set -x
 
-#check is sftools and fft are installed
+#check if sftools and fft are installed
 if hash sftools 2>/dev/null && hash fft 2>/dev/null; then
 	echo -e "\nFound sftools and fft...continuing with script"
 else
-	echo -e "\nsftools and fft are required to run this script\n"
+	echo -e "\nThis script requires sftools and fft\n"
 	exit 1
 fi
 
@@ -36,26 +36,12 @@ clear
 function read_mtz {
 #read file in sftools
 sftools <<EOF | tee sftoolsread.txt
- read $filename
+ read $mtzfile
  complete
  list
  end
  yes
 EOF
-}
-
-#Ask user for resolution
-function askuser {
-echo -n "Make a lower resolution map? (Y/N) "
-while read -r -n 1 -s answer;do
-  if [[ $answer = [YyNn] ]]; then
-    [[ $answer = [Yy] ]] && retval=0
-    [[ $answer = [Nn] ]] && retval=1
-    break
-  fi  
-done
-echo
-return $retval
 }
 
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
@@ -84,26 +70,20 @@ echo -e "Updated on $last_update by Donald Raymond (Steve Harrison Lab)"
 echo -e
 echo -e "*********************************************************************"
 
-
 #check to see if user specified a file
 if  [ -f "$1" ] && [[ "$1" = *.mtz ]] ;then
 	echo -e "\nFound $1"
-	filename=$1
+	mtzfile=$1
 else
-	filename="null"
-	while [ ! -f "$filename" ]; do
-		echo -e "\nList of MTZ files in the current directory\n"
-		echo -e "*********************\n"
- 		echo -e "`ls *.mtz 2>/dev/null`\n"
-		echo -e "*********************\n"
-		read -p "Please enter a valid MTZ filename (e.g. file.mtz): " filename
-
-		if [ ! -f "$filename" ]; then
-			echo -e "\nCould not find an MTZ file called $filename"
-		fi
-
-	done
-	echo -e "\nFound $filename"
+	if [[ -z "$mtzfile" ]]; then
+		echo -e "\nMTZs in current directory: `ls -m  *.mtz 2>/dev/null` \n"
+		read -p "Load MTZ file: " mtzfile
+		while [ ! -f "$mtzfile" ]; do
+			echo
+			read -p "I need a valid MTZ file: " mtzfile
+		done
+		echo -e "\nFound $mtzfile"
+	fi
 fi
 
 echo -e "\nRunning sftools"
@@ -140,8 +120,8 @@ echo -e "Getting resolution limits"
 res_low="`awk '/The resolution range in the data base is/ {print $9}' sftoolsread.txt`"
 echo -e "\n\tLow resolution limit is $res_low"
 
-res_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
-echo -e "\n\tHigh resolution limit is $res_high\n"
+reso_high="`awk '/The resolution range in the data base is/ {print $11}' sftoolsread.txt`"
+echo -e "\n\tHigh resolution limit is $reso_high\n"
 
 
 #get space group name
@@ -149,50 +129,44 @@ spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsre
 echo -e "The space group is $spaceGroupName \n"
 
 #Ask user about lower resolution map
-if askuser; then
-	#get new resolution from user
-	new_res="0"
-	while [[ $new_res < "$res_high" ]];do
-		echo -en "\nResolution limit of new map: "
-		read new_res
-	done
-	#set high resolution of map
-	res_high=$new_res
-fi
+read -p "Resolution of map? [$reso_high] " res_high
+while [[ -z "$res_high" ]] ; do
+	res_high=$reso_high
+done
 
 #Ask user for map prefix
-mapName=
-while [[ $mapName = "" ]];do
-	echo -en "\nPrefix for output map file: " 
-	read mapName
+echo
+read -p "Prefix for output map file [map]: " mapName
+while [[ -z $mapName ]];do
+	mapName=map
 done
 
 #make map
 echo -e "\nMaking and normalizing map(s)"
 case $map_coef in 
-	F_DELWT) 	make_map $filename $mapName-2FoFc.ccp4 $res_low $res_high FWT PHWT 
-				make_map $filename $mapName-FoFc.ccp4 $res_low $res_high DELFWT PHDELWT
+	F_DELWT) 	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high FWT PHWT 
+				make_map $mtzfile $mapName-FoFc.ccp4 $res_low $res_high DELFWT PHDELWT
 				echo -e "\n\tCreated $mapName-2FoFc.ccp4 and $mapName-FoFc.ccp4"
 					;;
 	
-	FDM)		make_map $filename $mapName-DM.ccp4 $res_low $res_high FDM PHIDM
+	FDM)		make_map $mtzfile $mapName-DM.ccp4 $res_low $res_high FDM PHIDM
 				echo -e "\n\tCreated $mapName-DM.ccp4"
 					;;
 
-	FEM)		make_map $filename $mapName-FEM.ccp4 $res_low $res_high FEM PHIFEM 
+	FEM)		make_map $mtzfile $mapName-FEM.ccp4 $res_low $res_high FEM PHIFEM 
 				echo -e "\n\tCreated $mapName-FEM.ccp4"
 					;;
 	
-	FWT)		make_map $filename $mapName.ccp4 $res_low $res_high FWT PHWT 
+	FWT)		make_map $mtzfile $mapName.ccp4 $res_low $res_high FWT PHWT 
 				echo -e "\n\tCreated $mapName.ccp4"
 					;;
 	
-	2FO)		make_map $filename $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
-				make_map $filename $mapName-FoFc.ccp4 $res_low $res_high FOFCWT PHFOFCWT 
+	2FO)		make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
+				make_map $mtzfile $mapName-FoFc.ccp4 $res_low $res_high FOFCWT PHFOFCWT 
 				echo -e "\n\tCreated $mapName-2FoFc.ccp4 and $mapName-FoFc.ccp4"
 					;;
 	
-	2FO_only)	make_map $filename $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
+	2FO_only)	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
 				echo -e "\n\tCreated $mapName-2FoFc.ccp4"
 					;;
 
