@@ -69,7 +69,7 @@ EOF
 #function to get PDB object name
 function obj_name {
 	echo -e "\nI've found "$pdbfile" \n"
-	read -p "What is the PDB object's name? [obj] " -n 6 pdbName
+	read -e -p "What is the PDB object's name? [obj] " -n 6 pdbName
 	while [[ -z "$pdbName" ]]; do
 		pdbName=obj
 	done
@@ -190,14 +190,14 @@ spaceGroupName="`awk '/Initializing CHKHKL for spacegroup/ {print $5}' sftoolsre
 echo -e "The space group is $spaceGroupName \n"
 
 #Ask user about map resolution
-read -p "Resolution of map? [$reso_high] " res_high
+read -e -p "Resolution of map? [$reso_high] " res_high
 while [[ -z "$res_high" ]]; do
 	res_high=$reso_high
 done
 
 #Ask user for map prefix
 echo
-read -p "Prefix for output map file [map]: " mapname
+read -e -p "Prefix for output map file [map]: " mapName
 while [[ -z $mapName ]]; do
 	mapName=map
 done
@@ -365,13 +365,13 @@ esac
 #Ask user for pdb file
 if [[ -z "$pdbfile" ]]; then
 	echo -e "\nPDBs in current directory: `ls -m  *.pdb 2>/dev/null` \n"
-	read -p "Load PDB file [none] " pdbfile
+	read -e -p "Load PDB file [none] " pdbfile
 	if [[ -z "$pdbfile" ]]; then
 		extra=""
 	else
 		while [ ! -f "$pdbfile" ]; do
 			echo
-			read -p "I need a PDB file: " pdbfile
+			read -e -p "I need a PDB file: " pdbfile
 		done
 		obj_name
 	fi
