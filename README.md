@@ -8,7 +8,7 @@ Check permissions before the scripts. Use `chmod +x script.sh` to make the scrip
 
 Report bugs or feature request to *raymond [at] crystal.harvard.edu*
 
-## grabPDB.sh
+## PDB_data.sh
 
 The purpose of this script is to download atomic coordinates and reflections files from the [Protein Data Bank.](www.rcsb.org)
 
@@ -18,7 +18,7 @@ The script downloads the PDB and sf.mmCIF files from the PDB. It then converts t
 
 After running the script the PDB and MTZ files can be opened in COOT, PyMOL to visualize the maps and model. To get the maps and PDB into O use the makeO.sh script described below.
 
-## PDBget.sh
+## PDB_get.sh
 
 This script just downloads a PDB file from the Protein Data Bank.
 
@@ -31,7 +31,7 @@ The purpose of this script is to idealize the geometry of a model using refmac5.
 
 This script converts phenix or refmac TLS input files to buster format. I use the TLS.MD server to get the phenix or refmac TLS input files and use this script to convert it to buster format.
 
-## makeO.sh
+## O_makemap.sh
 
 The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the [O graphics program](http://xray.bmc.uu.se/alwyn/TAJ/Home.html). This script is fully automated and only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
 
@@ -43,17 +43,17 @@ Run like this `makeO.sh file.mtz file.pdb`, or simple run `makeO.sh` and follow 
 
 This is a script to add a new map to an on_startup file. I use this script to add DM or resolve maps to an on_startup file containing nFo-Fc maps.
 
-## pdb2O.sh 
+## O_pdb.sh 
 
 This script combines the functionality of grabPDB.sh and makeO.sh. Essentially, it will download coordinate and reflection files from the PDB, generate maps and create an O macro to get the maps and PDB into O upon launch. Just run the script with a PDB ID and sit back and relax.
-
-## makemap.sh
-
-This is a stripped-down version of the makeO.sh script. All it does is make maps from an mtz with map coefficients.
 
 ## O_insertSeq.sh
 
 This script generates the O commands to insert residues into the database. It is most useful during building.
+
+## makemap.sh
+
+This is a stripped-down version of the makeO.sh script. All it does is make maps from an mtz with map coefficients.
 
 ## sacom.sh
 

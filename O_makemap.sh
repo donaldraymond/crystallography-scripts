@@ -40,7 +40,7 @@ fi
 clear
 
 #variables to hold window positions
-m_user="-1.66 0.56"
+m_user="-1.66 0.49"
 m_object="-1.66 0.94"
 m_dial="1.44 -0.34"
 m_paint="1.14 -0.34"
@@ -236,14 +236,13 @@ colour_text cyan
 <Centre ID> Centre_id
 <Clear ID text> Clear_Id
 colour_text yellow
-<Build Residue> bu_res
-<Build Rotamer> build_rot
-colour_text cyan
 <Baton Build> Baton_build
+<Add Water> Water_add
+colour_text cyan
 <Lego C alpha> Lego_CA
 <Lego Loop> Lego_Loop
 <Lego Side Chain> Lego_side_ch
-<Add Water> Water_add
+<Lego auto SC> Lego_Auto_SC
 colour_text magenta
 <RSR Group> Fm_rsr_grou
 <RSR Rotamer> Fm_rsr_rota
@@ -257,6 +256,7 @@ colour_text yellow
 colour_text cyan
 <Flip Peptide> Flip_peptide
 <Refine Zone> Refi_zone
+<Fix atom> Refi_fix_atom
 Tor_residue
 colour_text yellow
 <Distance> Dist_define
