@@ -28,6 +28,7 @@ The user can either pass the script a PDB ID in the command line e.g. `PDBget.sh
 The purpose of this script is to idealize the geometry of a model using refmac5. The script takes a PDB file as input and output a PDB with the idealize model. No MTZ file is required. I use this script before refining low resolution structures to help the refinement program out.
 
 ## busterTLS.sh
+
 This script converts phenix or refmac TLS input files to buster format. I use the TLS.MD server to get the phenix or refmac TLS input files and use this script to convert it to buster format.
 
 ## makeO.sh
@@ -38,6 +39,9 @@ The script using fft for generating the maps and then uses mapmask to normalize 
 
 Run like this `makeO.sh file.mtz file.pdb`, or simple run `makeO.sh` and follow instructions.
 
+##O_addmap.sh
+
+This is a script to add a new map to an on_startup file. I use this script to add DM or resolve maps to an on_startup file containing nFo-Fc maps.
 
 ## pdb2O.sh 
 
