@@ -225,7 +225,7 @@ fi
 
 #make o macro files
 echo '! generates nearby symmetry atoms
-symm_sph ;; 10.0' >> $O_dir/gen_symmetry
+symm_sph ;; 10.0' > $O_dir/gen_symmetry
 
 echo '.MENU                     T          47         40
 colour_text red
@@ -242,14 +242,13 @@ colour_text cyan
 <Centre ID> Centre_id
 <Clear ID text> Clear_Id
 colour_text yellow
-<Build Residue> bu_res
-<Build Rotamer> build_rot
-colour_text cyan
 <Baton Build> Baton_build
+<Add Water> Water_add
+colour_text cyan
 <Lego C alpha> Lego_CA
 <Lego Loop> Lego_Loop
 <Lego Side Chain> Lego_side_ch
-<Add Water> Water_add
+<Lego auto SC> Lego_Auto_SC
 colour_text magenta
 <RSR Group> Fm_rsr_grou
 <RSR Rotamer> Fm_rsr_rota
@@ -263,6 +262,7 @@ colour_text yellow
 colour_text cyan
 <Flip Peptide> Flip_peptide
 <Refine Zone> Refi_zone
+<Fix atom> Refi_fix_atom
 Tor_residue
 colour_text yellow
 <Distance> Dist_define
@@ -274,25 +274,25 @@ colour_text turquoise
 <Redraw Map> @.O_files/redraw_map
 <Next Water> @.O_files/next_water
 <Next ca> @.O_files/next_ca
-<Previous ca> @.O_files/previous_ca' >> $O_dir/menu_raymond.odb
+<Previous ca> @.O_files/previous_ca' > $O_dir/menu_raymond.odb
 
 echo '! centers screen on next alpha-carbon and redraw
 ! electron density maps as defined in on_startup
-centre_next atom_name = ca' >> $O_dir/next_ca
+centre_next atom_name = ca' > $O_dir/next_ca
 
 echo '! centers screen on next solvent molecule and
 ! redraws electron density maps as define in on_startup
-centre_next atom_name = o' >> $O_dir/next_water
+centre_next atom_name = o' > $O_dir/next_water
 
 echo '! centers screen on next alpha-carbon and redraws
 ! electron density maps as defined in on_startup
-centre_previous atom_name = ca' >> $O_dir/previous_ca
+centre_previous atom_name = ca' > $O_dir/previous_ca
 
 echo "! redraws maps defined in on_startup" > $O_dir/redraw_map
 
 echo '.ID_TEMPLATE         T          2         40
 %Restyp %RESNAM %ATMNAM
-residue_2ry_struc' >> $O_dir/resid.odb
+residue_2ry_struc' > $O_dir/resid.odb
 
 #make on_startup file
 echo -e "! read database files" > on_startup
