@@ -12,7 +12,7 @@ Report bugs or feature request to *raymond [at] crystal.harvard.edu*
 
 The purpose of this script is to download atomic coordinates and reflections files from the [Protein Data Bank.](www.rcsb.org)
 
-The user can either pass the script a PDB ID in the command line e.g. `grabPDB.sh 1yks` or input the ID when asked.
+The user can either pass the script a PDB ID in the command line e.g. `PDB_data.sh 1yks` or input the ID when asked.
 
 The script downloads the PDB and sf.mmCIF files from the PDB. It then converts the cif file to an MTZ using CIF2MTZ and then calculates map coefficients using REFMAC5.
 
@@ -22,7 +22,7 @@ After running the script the PDB and MTZ files can be opened in COOT, PyMOL to v
 
 This script just downloads a PDB file from the Protein Data Bank.
 
-The user can either pass the script a PDB ID in the command line e.g. `PDBget.sh 1yks` or input the ID when asked.
+The user can either pass the script a PDB ID in the command line e.g. `PDB_get.sh 1yks` or input the ID when asked.
 
 ## PDB_ideal.sh
 The purpose of this script is to idealize the geometry of a model using refmac5. The script takes a PDB file as input and output a PDB with the idealize model. No MTZ file is required. I use this script before refining low resolution structures to help the refinement program out.
@@ -37,7 +37,7 @@ The purpose of this script is to quickly generate CCP4 maps from an MTZ and get 
 
 The script using fft for generating the maps and then uses mapmask to normalize the map. It creates an on_startup O macro file with the map and model already added.
 
-Run like this `makeO.sh file.mtz file.pdb`, or simple run `makeO.sh` and follow instructions.
+Run like this `O_makemap.sh file.mtz file.pdb`, or simple run `O_makemap.sh` and follow instructions.
 
 ##O_addmap.sh
 
