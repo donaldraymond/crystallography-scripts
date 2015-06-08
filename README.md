@@ -45,7 +45,7 @@ This is a script to add a new map to an on_startup file. I use this script to ad
 
 ## O_pdb.sh 
 
-This script combines the functionality of grabPDB.sh and makeO.sh. Essentially, it will download coordinate and reflection files from the PDB, generate maps and create an O macro to get the maps and PDB into O upon launch. Just run the script with a PDB ID and sit back and relax.
+This script combines the functionality of PDB_grab.sh and O_makemap.sh. Essentially, it will download coordinate and reflection files from the PDB, generate maps and create an O macro to get the maps and PDB into O upon launch. Just run the script with a PDB ID and sit back and relax.
 
 ## O_insertSeq.sh
 
