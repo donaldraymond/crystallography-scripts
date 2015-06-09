@@ -110,7 +110,7 @@ EOF
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
 #make the map
-fft HKLIN $1 MAPOUT $2 << eof > /dev/null
+fft HKLIN $1 MAPOUT temp.ccp4 << eof > /dev/null
 xyzlim asu
 resolution $3 $4
 GRID SAMPLE 6.0
@@ -119,9 +119,20 @@ end
 eof
 
 # normalize the map
-mapmask mapin $2  mapout $2  << EOF > /dev/null
+mapmask mapin temp.ccp4  mapout temp.ccp4  << EOF > /dev/null
 SCALE SIGMA
 EOF
+
+#convert to dn6 format
+sftools << EOF > /dev/null
+mapin temp.ccp4 map
+mapout $2
+quit
+end
+EOF
+
+#delete temp files.
+rm temp.ccp4
 }
 
 #function to add map to on_start
@@ -311,11 +322,11 @@ echo -e "d_s_d .fm_real 2 2 1\n" >> on_startup
 
 #make ccp4 map
 echo -e "\nMaking and normalizing CCP4 map(s)"
-make_map $mtzfile $pdb_id-2FoFc.ccp4 $res_low $res_high FWT PHWT 
-make_map $mtzfile $pdb_id-FoFc.ccp4 $res_low $res_high DELFWT PHDELWT
-mapO $pdb_id-FoFc.ccp4  FoFc+ 3   green 1 "$den2"
-mapO $pdb_id-FoFc.ccp4  FoFc- -3   red 2 "$den3"
-mapO $pdb_id-2FoFc.ccp4 2FoFc 1.1 slate_blue 3 "$den1"
+make_map $mtzfile $pdb_id-2FoFc.dn6 $res_low $res_high FWT PHWT 
+make_map $mtzfile $pdb_id-FoFc.dn6 $res_low $res_high DELFWT PHDELWT
+mapO $pdb_id-FoFc.dn6  FoFc+ 3   green 1 "$den2"
+mapO $pdb_id-FoFc.dn6  FoFc- -3   red 2 "$den3"
+mapO $pdb_id-2FoFc.dn6 2FoFc 1.1 slate_blue 3 "$den1"
 redraw FoFc+
 redraw FoFc-
 redraw 2FoFc

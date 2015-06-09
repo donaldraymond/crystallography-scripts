@@ -82,7 +82,7 @@ function obj_name {
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
 #make the map
-fft HKLIN $1 MAPOUT $2 << eof > /dev/null
+fft HKLIN $1 MAPOUT temp.ccp4 << eof > /dev/null
 xyzlim asu
 resolution $3 $4
 GRID SAMPLE 6.0
@@ -91,9 +91,20 @@ end
 eof
 
 # normalize the map
-mapmask mapin $2  mapout $2  << EOF > /dev/null
+mapmask mapin temp.ccp4  mapout temp.ccp4  << EOF > /dev/null
 SCALE SIGMA
 EOF
+
+#convert to dn6 format
+sftools << EOF > /dev/null
+mapin temp.ccp4 map
+mapout $2
+quit
+end
+EOF
+
+#delete temp files.
+rm temp.ccp4
 }
 
 #function to add map to on_start
@@ -311,48 +322,48 @@ echo -e "d_s_d .fm_real 2 2 1\n" >> on_startup
 
 echo -e "\nMaking and normalizing CCP4 map(s)"
 case $map_coef in 
-	F_DELWT) 	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high FWT PHWT 
-				make_map $mtzfile $mapName-FoFc.ccp4 $res_low $res_high DELFWT PHDELWT
-				echo -e "\n\tCreated $mapName-2FoFc.ccp4 and $mapName-FoFc.ccp4"
-				mapO $mapName-FoFc.ccp4  FoFc+ 3   green 1 "$den2"
-				mapO $mapName-FoFc.ccp4  FoFc- -3   red 2 "$den3"
-				mapO $mapName-2FoFc.ccp4 2FoFc 1.1 slate_blue 3 "$den1"
+	F_DELWT) 	make_map $mtzfile $mapName-2FoFc.dn6 $res_low $res_high FWT PHWT 
+				make_map $mtzfile $mapName-FoFc.dn6 $res_low $res_high DELFWT PHDELWT
+				echo -e "\n\tCreated $mapName-2FoFc.dn6 and $mapName-FoFc.dn6"
+				mapO $mapName-FoFc.dn6  FoFc+ 3   green 1 "$den2"
+				mapO $mapName-FoFc.dn6  FoFc- -3   red 2 "$den3"
+				mapO $mapName-2FoFc.dn6 2FoFc 1.1 slate_blue 3 "$den1"
 				redraw FoFc+
 				redraw FoFc-
 				redraw 2FoFc
 					;;
 	
-	FDM)		make_map $mtzfile $mapName-DM.ccp4 $res_low $res_high FDM PHIDM
-				echo -e "\n\tCreated $mapName-DM.ccp4"
-				mapO $mapName-DM.ccp4 DM 1.1 slate_blue 1 "$den1"
+	FDM)		make_map $mtzfile $mapName-DM.dn6 $res_low $res_high FDM PHIDM
+				echo -e "\n\tCreated $mapName-DM.dn6"
+				mapO $mapName-DM.dn6 DM 1.1 slate_blue 1 "$den1"
 				redraw DM
 					;;
 
-	FEM)		make_map $mtzfile $mapName-FEM.ccp4 $res_low $res_high FEM PHIFEM 
-				echo -e "\n\tCreated $mapName-FEM.ccp4"
-				mapO $mapName-FEM.ccp4 FEM 1.1 slate_blue 1 "$den1"
+	FEM)		make_map $mtzfile $mapName-FEM.dn6 $res_low $res_high FEM PHIFEM 
+				echo -e "\n\tCreated $mapName-FEM.dn6"
+				mapO $mapName-FEM.dn6 FEM 1.1 slate_blue 1 "$den1"
 				redraw FEM
 					;;
 	
-	FWT)		make_map $mtzfile $mapName.ccp4 $res_low $res_high FWT PHWT 
-				echo -e "\n\tCreated $mapName.ccp4"
-				mapO $mapName.ccp4 Den 1.1 slate_blue 1 "$den1"
+	FWT)		make_map $mtzfile $mapName.dn6 $res_low $res_high FWT PHWT 
+				echo -e "\n\tCreated $mapName.dn6"
+				mapO $mapName.dn6 Den 1.1 slate_blue 1 "$den1"
 				redraw Den
 					;;
 	
-	2FO)		make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
-				make_map $mtzfile $mapName-FoFc.ccp4 $res_low $res_high FOFCWT PHFOFCWT 
-				echo -e "\n\tCreated $mapName-2FoFc.ccp4 and $mapName-FoFc.ccp4"
-				mapO $mapName-FoFc.ccp4  FoFc+ 3   green 1 "$den2"
-				mapO $mapName-FoFc.ccp4  FoFc- -3   red 2 "$den3"
-				mapO $mapName-2FoFc.ccp4 2FoFc 1.1 slate_blue 3 "$den1" 
+	2FO)		make_map $mtzfile $mapName-2FoFc.dn6 $res_low $res_high 2FOFCWT PH2FOFCWT
+				make_map $mtzfile $mapName-FoFc.dn6 $res_low $res_high FOFCWT PHFOFCWT 
+				echo -e "\n\tCreated $mapName-2FoFc.dn6 and $mapName-FoFc.dn6"
+				mapO $mapName-FoFc.dn6  FoFc+ 3   green 1 "$den2"
+				mapO $mapName-FoFc.dn6  FoFc- -3   red 2 "$den3"
+				mapO $mapName-2FoFc.dn6 2FoFc 1.1 slate_blue 3 "$den1" 
 				redraw FoFc+
 				redraw FoFc-
 				redraw 2FoFc
 					;;
-	2FO_only)	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
-				echo -e "\n\tCreated $mapName-2FoFc.ccp4"
-				mapO $mapName-2FoFc.ccp4 2FoFc 1.1 slate_blue 1 "$den1" 
+	2FO_only)	make_map $mtzfile $mapName-2FoFc.dn6 $res_low $res_high 2FOFCWT PH2FOFCWT
+				echo -e "\n\tCreated $mapName-2FoFc.dn6"
+				mapO $mapName-2FoFc.dn6 2FoFc 1.1 slate_blue 1 "$den1" 
 				redraw 2FoFc
 					;;
 
