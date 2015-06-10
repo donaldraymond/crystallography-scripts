@@ -4,7 +4,7 @@ These are a collection of scripts that I wrote to help with specific tasks in X-
 
 Most of the scripts in this git repository require the [CCP4](http://www.ccp4.ac.uk) package. I try to use CCP4 programs exclusively to ensure general compatibility. When I use program outside of the CCP4 suite, I run a check to see if that program is installed before running the script.
 
-Check permissions before the scripts. Use `chmod +x script.sh` to make the script executable
+Check permissions before running the scripts. Use `chmod +x script.sh` to make the script executable
 
 Report bugs or feature request to *raymond [at] crystal.harvard.edu*
 
