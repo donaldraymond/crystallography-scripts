@@ -16,7 +16,7 @@ The user can either pass the script a PDB ID in the command line e.g. `PDB_data.
 
 The script downloads the PDB and sf.mmCIF files from the PDB. It then converts the cif file to an MTZ using CIF2MTZ and then calculates map coefficients using REFMAC5.
 
-After running the script the PDB and MTZ files can be opened in COOT, PyMOL to visualize the maps and model. To get the maps and PDB into O use the makeO.sh script described below.
+After running the script the PDB and MTZ files can be opened in COOT, PyMOL to visualize the maps and model. To get the maps and PDB into O use the O_makemap.sh script described below.
 
 ## PDB_get.sh
 
