@@ -33,15 +33,15 @@ This script converts phenix or refmac TLS input files to buster format. I use th
 
 ## O_makemap.sh
 
-The purpose of this script is to quickly generate CCP4 maps from an MTZ and get the maps and associated PDB into the [O graphics program](http://xray.bmc.uu.se/alwyn/TAJ/Home.html). This script is fully automated and only requires the user to specify the MTZ, the PDB, and a prefix for the CCP4 maps.
+The purpose of this script is to quickly generate DSN6 maps from an MTZ and get the maps and associated PDB into the [O graphics program](http://xray.bmc.uu.se/alwyn/TAJ/Home.html). This script is fully automated and only requires the user to specify the MTZ, the PDB, and a prefix for the DSN6 maps.
 
-The script using fft for generating the maps and then uses mapmask to normalize the map. It creates an on_startup O macro file with the map and model already added.
+The script uses fft for generating the maps and then uses mapmask to normalize the map. It creates an on_startup O macro file with the map and model already added.
 
 Run like this `O_makemap.sh file.mtz file.pdb`, or simple run `O_makemap.sh` and follow instructions.
 
 ##O_addmap.sh
 
-This is a script to add a new map to an on_startup file. I use this script to add DM or resolve maps to an on_startup file containing nFo-Fc maps.
+This is a script to add a new map to an O on_startup file. I use this script to add DM or resolve maps to an on_startup file containing nFo-Fc maps.
 
 ## O_pdb.sh 
 
@@ -53,7 +53,7 @@ This script generates the O commands to insert residues into the database. It is
 
 ## makemap.sh
 
-This is a stripped-down version of the makeO.sh script. All it does is make maps from an mtz with map coefficients.
+This is a stripped-down version of the makeO.sh script. All it does is make CCP4 maps from an mtz with map coefficients.
 
 ## sacom.sh
 
