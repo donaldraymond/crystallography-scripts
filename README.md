@@ -78,3 +78,7 @@ This script runs XSCALE and XDSCONV after data processing to creates an MTZ file
 ### XDS_truncate.sh
 
 A script to create an MTZ file from XDS_ASCII.HKL and convert I to F. This script is superseded by XDS_scale.sh since XDSCONV can convert I to F.
+
+## VI_CommandReference.pdf
+
+I love VI, so I made a cheat sheet. Now I'm a text editing ninja.
