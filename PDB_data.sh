@@ -85,6 +85,9 @@ eof
 
 #get R and R_free from refmac
 echo -e "\nR/R_free:`awk '/^       0   0/ {print $2}' refmac.log`/`awk '/^       0   0/ {print $3}' refmac.log`" #$r_fac/$r_free
+
+#remove refmac.log
+rm refmac.log
 }
 
 #clear screen
@@ -158,7 +161,7 @@ fi
 calc_mapcoef 
 
 #cleanup
-rm temp* "$cif_file" refmac.log 2> /dev/null
+rm temp* "$cif_file" 2> /dev/null
 
 #end
 echo -e "\nScript DONE!!\n"

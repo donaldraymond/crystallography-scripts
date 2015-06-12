@@ -97,6 +97,9 @@ eof
 
 #get R and R_free from refmac
 echo -e "\nR/R_free:`awk '/^       0   0/ {print $2}' refmac.log`/`awk '/^       0   0/ {print $3}' refmac.log`" #$r_fac/$r_free
+
+#remove refmac.log
+rm refmac.log
 }
 
 #function to run sftools
