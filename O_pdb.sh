@@ -87,13 +87,16 @@ mv temp1.mtz temp.mtz
 #function to calculate map coefficients
 function calc_mapcoef {
 echo -e "\nCalculating structure factors and map coefficients"
-refmac5 XYZIN "$pdb_file" XYZOUT temp.pdb HKLIN temp.mtz HKLOUT $pdb_id.mtz << eof > /dev/null
+refmac5 XYZIN "$pdb_file" XYZOUT temp.pdb HKLIN temp.mtz HKLOUT $pdb_id.mtz << eof > refmac.log
 labin  FP=FP SIGFP=SIGFP FREE=FREE
 ncyc 0
 labout  FC=FC FWT=FWT PHIC=PHIC PHWT=PHWT DELFWT=DELFWT PHDELWT=PHDELWT FOM=FOM
 RSIZE 80
 END
 eof
+
+#get R and R_free from refmac
+echo -e "\nR/R_free:`awk '/^       0   0/ {print $2}' refmac.log`/`awk '/^       0   0/ {print $3}' refmac.log`" #$r_fac/$r_free
 }
 
 #function to run sftools
