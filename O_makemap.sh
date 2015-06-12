@@ -2,7 +2,7 @@
 
 #######################################################
 
-# This is a script to create ccp4 maps for ono
+# This is a script to create maps for ono
 #written by Donald Raymond (raymond@crystal.harvard.edu)
 
 #List of changes
@@ -129,7 +129,7 @@ echo "fm_draw $1" >> $O_dir/redraw_map
 echo -e "\n"
 echo -e "******************************************************************"
 echo -e
-echo -e "This is a script to produce CCP4 maps for the O graphics program"
+echo -e "This is a script to produce DSN6 maps for the O graphics program"
 echo -e
 echo -e "Updated on $last_update by Donald Raymond (Steve Harrison Lab)"
 echo -e
@@ -316,11 +316,11 @@ echo -e "d_s_d .fm_real 2 2 1\n" >> on_startup
 
 ####################################################
 #
-#make ccp4 map
+#make DSN6 map
 #
 ####################################################
 
-echo -e "\nMaking and normalizing CCP4 map(s)"
+echo -e "\nMaking and normalizing DSN6 map(s)"
 case $map_coef in 
 	F_DELWT) 	make_map $mtzfile $mapName-2FoFc.dn6 $res_low $res_high FWT PHWT 
 				make_map $mtzfile $mapName-FoFc.dn6 $res_low $res_high DELFWT PHDELWT

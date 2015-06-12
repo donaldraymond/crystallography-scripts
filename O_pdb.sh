@@ -320,8 +320,8 @@ echo -e "win_open paint_display $m_paint\n" >> on_startup
 echo -e "! display map in RMS units and not absolute" >> on_startup
 echo -e "d_s_d .fm_real 2 2 1\n" >> on_startup
 
-#make ccp4 map
-echo -e "\nMaking and normalizing CCP4 map(s)"
+#make DSN6 map
+echo -e "\nMaking and normalizing DSN6 map(s)"
 make_map $mtzfile $pdb_id-2FoFc.dn6 $res_low $res_high FWT PHWT 
 make_map $mtzfile $pdb_id-FoFc.dn6 $res_low $res_high DELFWT PHDELWT
 mapO $pdb_id-FoFc.dn6  FoFc+ 3   green 1 "$den2"
