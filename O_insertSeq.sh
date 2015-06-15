@@ -90,7 +90,7 @@ for (( i=0; i<${#sequence}; i++ )); do
                 ;;
         Y | y)   res="Tyr"
                 ;;
-        *)  echo -e "\n$current_value is not a valid residue ID. Check sequence and try again\n" ; exit 1
+        *)  echo -e "\n$current_value is not a valid residue ID. Check sequence and try again\n" ; rm mutate_insert.txt; exit 1
                 ;;
     esac
          
