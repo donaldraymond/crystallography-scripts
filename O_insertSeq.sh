@@ -39,7 +39,10 @@ starting_residue=$(ask "Position of first residue to insert or mutate" 5)
 echo
 
 #get sequence
-sequence=$(ask "Insert sequence" 1000)
+sequence_string=$(ask "Insert sequence" 1000)
+
+#remove spaces, tabs ,etc from sequences
+sequence=${sequence_string//[[:blank:]]/}
 
 #print insert or mutate commands for ono
 for (( i=0; i<${#sequence}; i++ )); do
