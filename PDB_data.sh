@@ -161,7 +161,7 @@ fi
 calc_mapcoef 
 
 #cleanup
-rm temp* "$cif_file" 2> /dev/null
+rm temp.pdb temp.mtz "$cif_file" 2> /dev/null
 
 #end
 echo -e "\nScript DONE!!\n"
