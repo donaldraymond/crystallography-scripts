@@ -44,7 +44,7 @@ grep "$1" $pdb_file | awk -F ":" '{print $2;exit}' | awk '{ gsub (" ", "", $0); 
 
 #function to make mtz
 function make_mtz {
-#make unique temp mtz and p file
+#make unique temp mtz files
 tempMTZ1=`mktemp -t XXXXXX.mtz`
 tempMTZ2=`mktemp -t XXXXXX.mtz`
 echo -e "\nConverting mmCIF to MTZ"
@@ -127,7 +127,7 @@ if [[ "$?" != "0" ]] ; then
 fi
 cif_file="$pdb_id-sf.cif"
 
-#get pdb file pro
+#get pdb file from RCSB
 echo -e "Getting $pdb_id coordinate file from PDB\n"
 get_file ".pdb"
 pdb_file="$pdb_id.pdb"
