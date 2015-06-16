@@ -56,8 +56,11 @@ grep "$1" $pdb_file | awk -F ":" '{print $2;exit}' | awk '{ gsub (" ", "", $0); 
 
 #function to make mtz
 function make_mtz {
+#make unique temp mtz files
+tempMTZ1=`mktemp -t XXXXXX.mtz`
+tempMTZ2=`mktemp -t XXXXXX.mtz`
 echo -e "\nConverting mmCIF to MTZ"
-cif2mtz  HKLIN $cif_file HKLOUT temp.mtz << eof > /dev/null
+cif2mtz  HKLIN $cif_file HKLOUT $tempMTZ1 << eof > /dev/null
 SYMMETRY "$space_group"
 END
 eof
@@ -68,7 +71,7 @@ function int_amp {
 #Convert I to F
 echo -e "\nConverting intensities to amplitudes"
 truncate="$CCP4/bin/truncate"
-$truncate HKLIN "temp.mtz" HKLOUT "temp1.mtz" << eof > /dev/null
+$truncate HKLIN "$tempMTZ1" HKLOUT "$tempMTZ2" << eof > /dev/null
 truncate YES
 anomalous NO
 nresidue 888
@@ -81,13 +84,15 @@ NOHARVEST
 end
 eof
 
-mv temp1.mtz temp.mtz
+mv $tempMTZ2 $tempMTZ1
 }
 
 #function to calculate map coefficients
 function calc_mapcoef {
+#make unique temp PDB file
+tempPDB=`mktemp -t XXXXXX.pdb`
 echo -e "\nCalculating structure factors and map coefficients"
-refmac5 XYZIN "$pdb_file" XYZOUT temp.pdb HKLIN temp.mtz HKLOUT $pdb_id.mtz << eof > refmac.log
+refmac5 XYZIN "$pdb_file" XYZOUT $tempPDB HKLIN $tempMTZ1 HKLOUT $pdb_id.mtz << eof > refmac.log
 labin  FP=FP SIGFP=SIGFP FREE=FREE
 ncyc 0
 labout  FC=FC FWT=FWT PHIC=PHIC PHWT=PHWT DELFWT=DELFWT PHDELWT=PHDELWT FOM=FOM
@@ -116,7 +121,9 @@ EOF
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
 #make the map
-fft HKLIN $1 MAPOUT temp.ccp4 << eof > /dev/null
+#make temp.ccp4 file
+tempCCP4=`mktemp -t XXXXXX.ccp4`
+fft HKLIN $1 MAPOUT $tempCCP4 << eof > /dev/null
 xyzlim asu
 resolution $3 $4
 GRID SAMPLE 6.0
@@ -125,20 +132,20 @@ end
 eof
 
 # normalize the map
-mapmask mapin temp.ccp4  mapout temp.ccp4  << EOF > /dev/null
+mapmask mapin $tempCCP4  mapout $tempCCP4  << EOF > /dev/null
 SCALE SIGMA
 EOF
 
 #convert to dn6 format
 sftools << EOF > /dev/null
-mapin temp.ccp4 map
+mapin $tempCCP4 map
 mapout $2
 quit
 end
 EOF
 
 #delete temp files.
-rm temp.ccp4
+rm $tempCCP4
 }
 
 #function to add map to on_start
@@ -217,7 +224,7 @@ fi
 calc_mapcoef 
 
 #cleanup
-rm temp* "$cif_file" 2> /dev/null
+rm $tempPDB $tempMTZ1 $tempMTZ2 "$cif_file" 2> /dev/null
 
 mtzfile="$pdb_id.mtz"
 

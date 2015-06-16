@@ -5,23 +5,7 @@
 # This is a script to create maps for ono
 #written by Donald Raymond (raymond@crystal.harvard.edu)
 
-#List of changes
-#12/19/14 initial release
-#12/19/14 Added feature to create on_startup file to load maps into ono
-#12/22/14 Added feature to find space group of map for redrawing in O
-#01/03/14 Added feature to load PDB file
-#01/03/15 Added feature to create O macro files
-#01/05/15 Added feature to check for sftools and fft installations
-#01/06/15 Added feature to create Duke stereochemistry database files
-#01/08/15 Added feature to scan arguments for mtz and pdb inputs
-#01/14/15 Added function to get pdb and mtz files
-#01/19/15 Removed Duke stereochemistry files due to broken bonds
-#01/22/15 Added feature to read old/residue_dict.odb
-#01/23/15 Added feature to hide O files
-#05/21/15 Added check for only 2FoFc map
-#05/27/15 Simplified script
-
-last_update="May 27 2015"
+last_update="June 15 2015"
 
 #######################################################
 
@@ -82,7 +66,9 @@ function obj_name {
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
 #make the map
-fft HKLIN $1 MAPOUT temp.ccp4 << eof > /dev/null
+#make temp.ccp4 file
+tempCCP4=`mktemp -t XXXXXX.ccp4`
+fft HKLIN $1 MAPOUT $tempCCP4 << eof > /dev/null
 xyzlim asu
 resolution $3 $4
 GRID SAMPLE 6.0
@@ -91,20 +77,44 @@ end
 eof
 
 # normalize the map
-mapmask mapin temp.ccp4  mapout temp.ccp4  << EOF > /dev/null
+mapmask mapin $tempCCP4  mapout $tempCCP4  << EOF > /dev/null
 SCALE SIGMA
 EOF
 
 #convert to dn6 format
 sftools << EOF > /dev/null
-mapin temp.ccp4 map
+mapin $tempCCP4 map
 mapout $2
 quit
 end
 EOF
 
 #delete temp files.
-rm temp.ccp4
+rm $tempCCP4
+}
+
+#Function to query user
+function askuser {
+echo;echo -n "$1 "
+while read -r -n 1 -s answer; do
+  if [[ $answer = [$2] ]]; then
+    [[ $answer = [$3] ]] && retval=0
+	[[ $answer = [$4] ]] && retval=1
+	break
+  fi  
+done
+echo
+return $retval
+}
+
+#function to check for custom F and P
+function check_cus {
+	if grep -q "$1\s*$2" sftoolsread.txt; then
+		echo -e "\nFound $2\n"
+	else
+		echo -e "\nDid not find $2\n"
+		exit 1
+	fi
 }
 
 #function to add map to on_start
@@ -170,6 +180,9 @@ if  $(grep -q FDM sftoolsread.txt); then
 elif  $(grep -q FEM sftoolsread.txt); then
     echo -e "\tFEM map coefficients found\n"
 	map_coef=FEM
+elif  $(grep -q 'parrot.F_phi.F' sftoolsread.txt); then
+    echo -e "\tParrot map coefficients found\n"
+	map_coef=PARROT
 elif  $(grep -q FWT sftoolsread.txt) && $(grep -q DELFWT sftoolsread.txt); then
     echo -e "\t2FoFc and FoFc map coefficients found\n"
 	map_coef=F_DELWT
@@ -183,8 +196,18 @@ elif  $(grep -q PH2FOFCWT sftoolsread.txt) && ! $(grep -q PHFOFCWT sftoolsread.t
     echo -e "\t2FoFc map coefficients found\n"
 	map_coef=2FO_only
 else
-	echo -e "\tNo known map coefficients found\n\n\tSend mtz to raymond@crystal.harvard.edu to update this script\n"
-	exit
+	#ask about custom F and P
+	if askuser "Unknown coefficients...use custom F and P? (Y/N): " YyNn Yy Nn; then
+		echo; read -p "Label of amplitude column: " amp
+		check_cus F "$amp"
+
+		read -p "Lable of phase column: " pha
+		check_cus P "$pha"
+		map_coef=custom
+	else
+		echo -e "\nTerminating script\n"
+		exit 1
+	fi
 fi
 
 #get the resolution 
@@ -210,7 +233,7 @@ done
 echo
 read -e -p "Prefix for output map file [map]: " mapName
 while [[ -z $mapName ]]; do
-	mapName=map
+	mapName="map"
 done
 
 ##################################################
@@ -299,6 +322,31 @@ echo '.ID_TEMPLATE         T          2         40
 %Restyp %RESNAM %ATMNAM
 residue_2ry_struc' > $O_dir/resid.odb
 
+echo '!
+! colour CAs with bad pepflips
+!
+mol #Which molecule ?#
+obj flip
+sel_on ;;
+pai_sel yellow
+sel_off ;;
+sel_prop residue_pepflip > #Cut off (A) ?# on
+pai_sel red sel_on ;;
+ca ; end' > $O_dir/bad_flip.omac
+
+echo '!
+! colour CAs with bad RS-fit values
+!
+mol #Which molecule ?#
+obj rsfit
+sel_on ;;
+pai_sel yellow
+sel_off ;;
+sel_prop residue_rsfit < #Cut off ?# on
+pai_sel red
+sel_on ;;
+ca ; end' > $O_dir/bad_rsfit.omac
+
 #make on_startup file
 echo -e "! read database files" > on_startup
 echo -e "read .O_files/menu_raymond.odb" >> on_startup
@@ -345,6 +393,12 @@ case $map_coef in
 				redraw FEM
 					;;
 	
+	PARROT)		make_map $mtzfile $mapName-parrot.dn6 $res_low $res_high 'parrot.F_phi.F' 'parrot.F_phi.phi' 
+				echo -e "\n\tCreated $mapName-parrot.ccp4"
+				mapO $mapName-parrot.dn6 PARR 1.1 slate_blue 1 "$den1"
+				redraw PARR
+					;;
+	
 	FWT)		make_map $mtzfile $mapName.dn6 $res_low $res_high FWT PHWT 
 				echo -e "\n\tCreated $mapName.dn6"
 				mapO $mapName.dn6 Den 1.1 slate_blue 1 "$den1"
@@ -367,6 +421,12 @@ case $map_coef in
 				redraw 2FoFc
 					;;
 
+	custom)		make_map $mtzfile $mapName.dn6 $res_low $res_high $amp $pha 
+				echo -e "\n\tCreated $mapName.dn6"
+				mapO $mapName.dn6 map 1.1 slate_blue 1 "$den1"
+				redraw map
+					;;
+	
 	*)			echo -e "\nUnknow map coefficients labels"
 				echo -e "Please send MTZ to raymond@crystal.harvard.edu to update script\n"
 				exit 1

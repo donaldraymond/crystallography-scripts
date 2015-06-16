@@ -4,12 +4,8 @@
 
 # This is a script to create ccp4 maps for O, PyMOL or COOT
 #written by Donald Raymond
-#List of changes
-#12/19/14 initial release
-#01/14/15 Bug fix
-#05/21/15 check for only 2FoFc map
 
-last_update="May 27 2015"
+last_update="June 15 2015"
 
 #######################################################
 #for debugging 
@@ -60,6 +56,30 @@ SCALE SIGMA
 EOF
 }
 
+#Function to query user
+function askuser {
+echo;echo -n "$1 "
+while read -r -n 1 -s answer; do
+  if [[ $answer = [$2] ]]; then
+    [[ $answer = [$3] ]] && retval=0
+	[[ $answer = [$4] ]] && retval=1
+	break
+  fi  
+done
+echo
+return $retval
+}
+
+#function to check for custom F and P
+function check_cus {
+	if grep -q "$1\s*$2" sftoolsread.txt; then
+		echo -e "\nFound $2\n"
+	else
+		echo -e "\nDid not find $2\n"
+		exit 1
+	fi
+}
+
 # Echo purpose of script
 echo -e "\n"
 echo -e "*********************************************************************"
@@ -98,6 +118,9 @@ if  $(grep -q FDM sftoolsread.txt); then
 elif  $(grep -q FEM sftoolsread.txt); then
     echo -e "\tFEM map coefficients found\n"
 	map_coef=FEM
+elif  $(grep -q 'parrot.F_phi.F' sftoolsread.txt); then
+    echo -e "\tParrot map coefficients found\n"
+	map_coef=PARROT
 elif  $(grep -q FWT sftoolsread.txt) && $(grep -q DELFWT sftoolsread.txt); then
     echo -e "\t2FoFc and FoFc map coefficients found\n"
 	map_coef=F_DELWT
@@ -111,8 +134,18 @@ elif $(grep -q PH2FOFCWT sftoolsread.txt) && ! $(grep -q PHFOFCWT sftoolsread.tx
     echo -e "\t2FoFc map coefficients found\n"
 	map_coef=2FO_only
 else
-	echo -e "\tNo known map coefficients found\n\n\tSend mtz to raymond@crystal.harvard.edu to update this script\n"
-	exit
+	#ask about custom F and P
+	if askuser "Unknown coefficients...use custom F and P? (Y/N): " YyNn Yy Nn; then
+		echo; read -p "Label of amplitude column: " amp
+		check_cus F "$amp"
+
+		read -p "Lable of phase column: " pha
+		check_cus P "$pha"
+		map_coef=custom
+	else
+		echo -e "\nTerminating script\n"
+		exit 1
+	fi
 fi
 
 #get the resolution 
@@ -157,6 +190,10 @@ case $map_coef in
 				echo -e "\n\tCreated $mapName-FEM.ccp4"
 					;;
 	
+	PARROT)		make_map $mtzfile $mapName-parrot.ccp4 $res_low $res_high 'parrot.F_phi.F' 'parrot.F_phi.phi' 
+				echo -e "\n\tCreated $mapName-parrot.ccp4"
+					;;
+	
 	FWT)		make_map $mtzfile $mapName.ccp4 $res_low $res_high FWT PHWT 
 				echo -e "\n\tCreated $mapName.ccp4"
 					;;
@@ -170,6 +207,10 @@ case $map_coef in
 				echo -e "\n\tCreated $mapName-2FoFc.ccp4"
 					;;
 
+	custom)		make_map $mtzfile $mapName.ccp4 $res_low $res_high $amp $pha 
+				echo -e "\n\tCreated $mapName.ccp4"
+					;;
+	
 	*)			echo -e "\nUnknow map coefficients labels"
 				echo -e "Please send MTZ to raymond@crystal.harvard.edu to update script"
 					;;
