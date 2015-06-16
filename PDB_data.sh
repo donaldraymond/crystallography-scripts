@@ -44,8 +44,11 @@ grep "$1" $pdb_file | awk -F ":" '{print $2;exit}' | awk '{ gsub (" ", "", $0); 
 
 #function to make mtz
 function make_mtz {
+#make unique temp mtz and p file
+tempMTZ1=`mktemp -t XXXXXX.mtz`
+tempMTZ2=`mktemp -t XXXXXX.mtz`
 echo -e "\nConverting mmCIF to MTZ"
-cif2mtz  HKLIN $cif_file HKLOUT temp.mtz << eof > /dev/null
+cif2mtz  HKLIN $cif_file HKLOUT $tempMTZ1 << eof > /dev/null
 SYMMETRY "$space_group"
 END
 eof
@@ -56,7 +59,7 @@ function int_amp {
 #Convert I to F
 echo -e "\nConverting intensities to amplitudes"
 truncate="$CCP4/bin/truncate"
-$truncate HKLIN "temp.mtz" HKLOUT "temp1.mtz" << eof > /dev/null
+$truncate HKLIN "$tempMTZ1" HKLOUT "$tempMTZ2" << eof > /dev/null
 truncate YES
 anomalous NO
 nresidue 888
@@ -69,13 +72,15 @@ NOHARVEST
 end
 eof
 
-mv temp1.mtz temp.mtz
+mv $tempMTZ2 $tempMTZ
 }
 
 #function to calculate map coefficients
 function calc_mapcoef {
+#make unique temp PDB file
+tempPDB=`mktemp -t XXXXXX.pdb`
 echo -e "\nCalculating structure factors and map coefficients"
-refmac5 XYZIN "$pdb_file" XYZOUT temp.pdb HKLIN temp.mtz HKLOUT $pdb_id.mtz << eof > refmac.log
+refmac5 XYZIN "$pdb_file" XYZOUT $tempPDB HKLIN $tempMTZ1 HKLOUT $pdb_id.mtz << eof > refmac.log
 labin  FP=FP SIGFP=SIGFP FREE=FREE
 ncyc 0
 labout  FC=FC FWT=FWT PHIC=PHIC PHWT=PHWT DELFWT=DELFWT PHDELWT=PHDELWT FOM=FOM
@@ -161,7 +166,7 @@ fi
 calc_mapcoef 
 
 #cleanup
-rm temp.pdb temp.mtz "$cif_file" 2> /dev/null
+rm $tempPDB $tempMTZ1 $tempMTZ2 "$cif_file" 2> /dev/null
 
 #end
 echo -e "\nScript DONE!!\n"
