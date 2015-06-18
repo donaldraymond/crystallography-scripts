@@ -46,7 +46,6 @@ grep "$1" $pdb_file | awk -F ":" '{print $2;exit}' | awk '{ gsub (" ", "", $0); 
 function make_mtz {
 #make unique temp mtz files
 tempMTZ1=_temp1$$.mtz
-tempMTZ2=_temp2$$.mtz
 echo -e "\nConverting mmCIF to MTZ"
 cif2mtz  HKLIN $cif_file HKLOUT $tempMTZ1 << eof > /dev/null
 SYMMETRY "$space_group"
@@ -57,6 +56,7 @@ eof
 #function to convert intensities to amplitudes
 function int_amp {
 #Convert I to F
+tempMTZ2=_temp2$$.mtz
 echo -e "\nConverting intensities to amplitudes"
 truncate="$CCP4/bin/truncate"
 $truncate HKLIN "$tempMTZ1" HKLOUT "$tempMTZ2" << eof > /dev/null
@@ -72,7 +72,7 @@ NOHARVEST
 end
 eof
 
-mv $tempMTZ2 $tempMTZ
+mv $tempMTZ2 $tempMTZ1
 }
 
 #function to calculate map coefficients
