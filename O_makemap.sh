@@ -67,7 +67,7 @@ function obj_name {
 function make_map {
 #make the map
 #make temp.ccp4 file
-tempCCP4=`mktemp -t XXXXXX.ccp4`
+tempCCP4=_temp$$.ccp4
 fft HKLIN $1 MAPOUT $tempCCP4 << eof > /dev/null
 xyzlim asu
 resolution $3 $4

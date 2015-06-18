@@ -45,8 +45,8 @@ grep "$1" $pdb_file | awk -F ":" '{print $2;exit}' | awk '{ gsub (" ", "", $0); 
 #function to make mtz
 function make_mtz {
 #make unique temp mtz files
-tempMTZ1=`mktemp -t XXXXXX.mtz`
-tempMTZ2=`mktemp -t XXXXXX.mtz`
+tempMTZ1=_temp1$$.mtz
+tempMTZ2=_temp2$$.mtz
 echo -e "\nConverting mmCIF to MTZ"
 cif2mtz  HKLIN $cif_file HKLOUT $tempMTZ1 << eof > /dev/null
 SYMMETRY "$space_group"
@@ -78,7 +78,7 @@ mv $tempMTZ2 $tempMTZ
 #function to calculate map coefficients
 function calc_mapcoef {
 #make unique temp PDB file
-tempPDB=`mktemp -t XXXXXX.pdb`
+tempPDB=_temp$$.pdb
 echo -e "\nCalculating structure factors and map coefficients"
 refmac5 XYZIN "$pdb_file" XYZOUT $tempPDB HKLIN $tempMTZ1 HKLOUT $pdb_id.mtz << eof > refmac.log
 labin  FP=FP SIGFP=SIGFP FREE=FREE

@@ -37,7 +37,7 @@ echo -e "\nRunning $number cycles\n"
 #function to run refmac idealized
 function idealize {
 $make unique temp PDB file
-tempPDB=`mktemp -t XXXXXX.pdb`
+tempPDB=_temp$$.pdb
 refmac5 XYZIN "$pdbin.pdb" XYZOUT $tempPDB << eof
 make -
     hydrogen ALL -
