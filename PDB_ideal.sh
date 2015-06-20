@@ -17,8 +17,8 @@ else
 fi
 
 if [[ "$1" = *.pdb ]] ;then
-	pdbin=`basename $1 .pdb`
-	echo -e "PDB is "$1""
+	pdbin=$1
+	echo -e "PDB is `basename $1`"
 else 
 	echo -e "Invalid input or no PDB specified\n"
 	exit 1
@@ -38,7 +38,7 @@ echo -e "\nRunning $number cycles\n"
 function idealize {
 $make unique temp PDB file
 tempPDB=_temp$$.pdb
-refmac5 XYZIN "$pdbin.pdb" XYZOUT $tempPDB << eof
+refmac5 XYZIN "$pdbin" XYZOUT $tempPDB << eof
 make -
     hydrogen ALL -
     hout NO -
@@ -90,7 +90,7 @@ idealize
 
 #replace LINKR tags with LINK
 echo -e "\nChecking for and removing LINKR records"
-sed 's/LINKR/LINK /g' <$tempPDB  >"$pdbin"_ideal.pdb
+sed 's/LINKR/LINK /g' <$tempPDB  > `basename $1 .pdb`_ideal.pdb
 
 #clean up
 rm -rf $tempPDB 2> /dev/null
