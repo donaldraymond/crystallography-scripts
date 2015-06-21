@@ -14,7 +14,7 @@ if [ ! -e "on_startup"  ] || [ ! -d "$O_dir" ]; then
 fi
 
 #check for *.ccp4 file
-if ! [[ "$1" = *.ccp4 ]]; then
+if ! [[ "$1" = *.ccp4 ]] && ! [[ "$1" = *.dn6 ]]; then
 	echo -e "This script needs a map file"
 	exit 1
 fi

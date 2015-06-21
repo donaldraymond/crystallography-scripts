@@ -42,7 +42,7 @@ EOF
 
 #function to make map 1:input file 2:output file 3:low res 4:high res 5:F 6:phase
 function make_map {
-fft HKLIN $1 MAPOUT $2 << eof > /dev/null
+fft HKLIN $1 MAPOUT $2.ccp4 << eof > /dev/null
 xyzlim asu
 resolution $3 $4
 GRID SAMPLE 6.0
@@ -51,9 +51,21 @@ end
 eof
 
 # normalize the map
-mapmask mapin $2  mapout $2  << EOF > /dev/null
+mapmask mapin $2.ccp4  mapout $2.ccp4  << EOF > /dev/null
 SCALE SIGMA
 EOF
+
+if [[ $format = dn6 ]]; then
+sftools << EOF > /dev/null
+mapin $2.ccp4 map
+mapout $2.dn6
+quit
+end
+EOF
+
+#delete temp files.
+rm $2.ccp4
+fi
 }
 
 #Function to query user
@@ -104,6 +116,13 @@ else
 		done
 		echo -e "\nFound $mtzfile"
 	fi
+fi
+
+#check for dsn6
+if [[  $2 = dn6 ]]; then
+	format=dn6
+else
+	format=ccp4
 fi
 
 echo -e "\nRunning sftools"
@@ -177,38 +196,38 @@ done
 #make map
 echo -e "\nMaking and normalizing map(s)"
 case $map_coef in 
-	F_DELWT) 	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high FWT PHWT 
-				make_map $mtzfile $mapName-FoFc.ccp4 $res_low $res_high DELFWT PHDELWT
-				echo -e "\n\tCreated $mapName-2FoFc.ccp4 and $mapName-FoFc.ccp4"
+	F_DELWT) 	make_map $mtzfile $mapName-2FoFc $res_low $res_high FWT PHWT 
+				make_map $mtzfile $mapName-FoFc $res_low $res_high DELFWT PHDELWT
+				echo -e "\n\tCreated $mapName-2FoFc.$format and $mapName-FoFc.$format"
 					;;
 	
-	FDM)		make_map $mtzfile $mapName-DM.ccp4 $res_low $res_high FDM PHIDM
-				echo -e "\n\tCreated $mapName-DM.ccp4"
+	FDM)		make_map $mtzfile $mapName-DM $res_low $res_high FDM PHIDM
+				echo -e "\n\tCreated $mapName-DM.$format"
 					;;
 
-	FEM)		make_map $mtzfile $mapName-FEM.ccp4 $res_low $res_high FEM PHIFEM 
-				echo -e "\n\tCreated $mapName-FEM.ccp4"
+	FEM)		make_map $mtzfile $mapName-FEM $res_low $res_high FEM PHIFEM 
+				echo -e "\n\tCreated $mapName-FEM.$format"
 					;;
 	
-	PARROT)		make_map $mtzfile $mapName-parrot.ccp4 $res_low $res_high 'parrot.F_phi.F' 'parrot.F_phi.phi' 
-				echo -e "\n\tCreated $mapName-parrot.ccp4"
+	PARROT)		make_map $mtzfile $mapName-parrot $res_low $res_high 'parrot.F_phi.F' 'parrot.F_phi.phi' 
+				echo -e "\n\tCreated $mapName-parrot.$format"
 					;;
 	
-	FWT)		make_map $mtzfile $mapName.ccp4 $res_low $res_high FWT PHWT 
-				echo -e "\n\tCreated $mapName.ccp4"
+	FWT)		make_map $mtzfile $mapName $res_low $res_high FWT PHWT 
+				echo -e "\n\tCreated $mapName.$format"
 					;;
 	
-	2FO)		make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
-				make_map $mtzfile $mapName-FoFc.ccp4 $res_low $res_high FOFCWT PHFOFCWT 
-				echo -e "\n\tCreated $mapName-2FoFc.ccp4 and $mapName-FoFc.ccp4"
+	2FO)		make_map $mtzfile $mapName-2FoFc $res_low $res_high 2FOFCWT PH2FOFCWT
+				make_map $mtzfile $mapName-FoFc $res_low $res_high FOFCWT PHFOFCWT 
+				echo -e "\n\tCreated $mapName-2FoFc.$format and $mapName-FoFc.$format"
 					;;
 	
-	2FO_only)	make_map $mtzfile $mapName-2FoFc.ccp4 $res_low $res_high 2FOFCWT PH2FOFCWT
-				echo -e "\n\tCreated $mapName-2FoFc.ccp4"
+	2FO_only)	make_map $mtzfile $mapName-2FoFc $res_low $res_high 2FOFCWT PH2FOFCWT
+				echo -e "\n\tCreated $mapName-2FoFc.$format"
 					;;
 
-	custom)		make_map $mtzfile $mapName.ccp4 $res_low $res_high $amp $pha 
-				echo -e "\n\tCreated $mapName.ccp4"
+	custom)		make_map $mtzfile $mapName $res_low $res_high $amp $pha 
+				echo -e "\n\tCreated $mapName.$format"
 					;;
 	
 	*)			echo -e "\nUnknow map coefficients labels"
