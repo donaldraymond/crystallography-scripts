@@ -25,6 +25,9 @@ if grep -q "fm_file $1" on_startup; then
 	exit 1
 fi
 
+#get map number 
+mapNum=`grep -c "fm_file" on_startup`
+
 #get map name
 echo
 read -e -p "Name of map [map]: " -n 6 mapName
@@ -39,6 +42,18 @@ spacegroup="`awk '/fm_file/ {print $4; exit}' on_startup`"
 echo "
 fm_file $1 $mapName $spacegroup
 Fm_setup $mapName 40 ; 1 1.1 magenta" >> on_startup
+
+#append density_window information
+case $mapNum in
+	1)	echo "window_open density_2 1.06 0.65" >> on_startup
+		;;
+	2)	echo "window_open density_3 1.06 0.32" >> on_startup
+		;;
+	3)	echo "window_open density_4 1.06 -0.01" >> on_startup
+		;;
+	*)	echo "Unknown option..not appending density window info"
+		;;
+esac
 
 echo "fm_draw $mapName" >> $O_dir/next_water
 echo "fm_draw $mapName" >> $O_dir/next_ca
