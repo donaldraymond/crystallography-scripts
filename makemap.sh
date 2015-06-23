@@ -102,28 +102,37 @@ echo -e "Updated on $last_update by Donald Raymond (Steve Harrison Lab)"
 echo -e
 echo -e "*********************************************************************"
 
-#check to see if user specified a file
-if  [ -f "$1" ] && [[ "$1" = *.mtz ]] ;then
-	echo -e "\nFound $1"
-	mtzfile=$1
-else
-	if [[ -z "$mtzfile" ]]; then
-		echo -e "\nMTZs in current directory: `ls -m  *.mtz 2>/dev/null` \n"
-		read -p "Load MTZ file: " mtzfile
-		while [ ! -f "$mtzfile" ]; do
-			echo
-			read -p "I need a valid MTZ file: " mtzfile
-		done
-		echo -e "\nFound $mtzfile"
+#check if user specified an mtz file
+for arg in "$@"; do
+	if [[ "$arg" = *.mtz ]]; then
+		mtzfile="$arg"
 	fi
+done
+
+#get mtz file if none specified
+if [[ -z "$mtzfile" ]]; then
+	echo -e "\nMTZs in current directory: `ls -m  *.mtz 2>/dev/null` \n"
+	read -p "Load MTZ file: " mtzfile
+	while [ ! -f "$mtzfile" ]; do
+		echo
+		read -p "I need a valid MTZ file: " mtzfile
+	done
+	echo -e "\nFound $mtzfile"
 fi
 
+#default format is ccp4
+format=ccp4
+
 #check for dsn6
-if [[  $2 = dn6 ]]; then
-	format=dn6
-else
-	format=ccp4
-fi
+while getopts ":d" opt; do
+	case $opt in
+		d)	echo -e "\n Making DSN6 map(s)\n"
+			format=dn6
+			;;
+		\?) echo "Invalid option: -$OPTARG" >&2
+			;;
+	esac
+done
 
 echo -e "\nRunning sftools"
 read_mtz

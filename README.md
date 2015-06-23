@@ -53,7 +53,7 @@ This script generates the O commands to insert residues into the database. It is
 
 ## makemap.sh
 
-This is a stripped-down version of the makeO.sh script. All it does is make CCP4 maps from an mtz with map coefficients. To make maps in DSN6 format, run with `makemap.sh file.mtz dn6`
+This is a stripped-down version of the makeO.sh script. All it does is make CCP4 maps from an mtz with map coefficients. To make maps in DSN6 format, run with `makemap.sh -d file.mtz`
 
 ## sacom.sh
 
