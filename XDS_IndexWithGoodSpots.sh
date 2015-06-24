@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Exit after first nonzero exit code
+set -e
+
 #script to re-index with only good spots
 ######################################################################
 

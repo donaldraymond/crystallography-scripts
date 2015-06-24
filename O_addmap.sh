@@ -2,6 +2,9 @@
 
 # A script to add map to on_startup O file
 
+#Exit after first nonzero exit code
+set -e
+
 #for debugging
 #set -x
 

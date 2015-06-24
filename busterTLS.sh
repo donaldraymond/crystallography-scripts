@@ -2,6 +2,9 @@
 
 # a script to convert phenix and refmac formatted TLS file for use in buster
 
+#Exit after first nonzero exit code
+set -e
+
 #for debugging
 #set -x
 

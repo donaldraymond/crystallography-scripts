@@ -2,6 +2,9 @@
 
 # This is a script to create a simulated annealing composite omit map
 
+#Exit after first nonzero exit code
+set -e
+
 # for debugging
 #set -x
 

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Exit after first nonzero exit code
+set -e
+
 #script to run xscale and xdsconv after data processing
 
 # functions

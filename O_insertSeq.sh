@@ -5,6 +5,9 @@
 
 ########################################################
 
+#Exit after first nonzero exit code
+set -e
+
 #clear screen
 clear
 
