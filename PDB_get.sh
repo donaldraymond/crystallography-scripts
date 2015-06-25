@@ -1,8 +1,5 @@
 #! /bin/bash
 
-#Exit after first nonzero exit code
-set -e
-
 #get pdb id from user
 if [[ $# == 0 ]] || [[ ${#1} != 4 ]]; then
 	echo; read -p "Please enter a valid PDB ID (e.g. 1yks): " -n 4 -e pdb_id

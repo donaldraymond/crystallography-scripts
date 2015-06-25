@@ -2,9 +2,6 @@
 
 # This is a scrip to idealize a model using refmac5
 
-#Exit after first nonzero exit code
-set -e
-
 #for debugging
 #set -x
 

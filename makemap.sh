@@ -8,8 +8,6 @@
 last_update="June 15 2015"
 
 #######################################################
-#Exit after first nonzero exit code
-set -e
 
 #for debugging 
 #set -x

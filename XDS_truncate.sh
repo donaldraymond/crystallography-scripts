@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Exit after first nonzero exit code
-set -e
-
 #A bash script to create an MTZ file from XDS_ASCII.HKL and convert I to F 
 
 ###################################################################

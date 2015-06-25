@@ -9,9 +9,6 @@
 #January 20 2015 - Added feature to deal with intensities
 #January 22 2015 - Added checks to deal with duplicates in cif file
 
-#Exit after first nonzero exit code
-set -e
-
 #for debugging
 #set -x
 ##################################################################
