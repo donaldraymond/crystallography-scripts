@@ -51,6 +51,9 @@ This script combines the functionality of PDB_grab.sh and O_makemap.sh. Essentia
 
 This script generates the O commands to insert residues into the database. It is most useful during building.
 
+##O_menu
+This script is used to create my menu environment for O. Best used when starting O without my on_starup file.
+
 ## makemap.sh
 
 This is a stripped-down version of the makeO.sh script. All it does is make CCP4 maps from an mtz with map coefficients. To make maps in DSN6 format, run with `makemap.sh -d file.mtz`
