@@ -11,9 +11,12 @@ fi
 echo -e "\nGetting $pdb_id coordinate file from PDB\n"
 curl -O -sf "http://files.rcsb.org/view/"$pdb_id".pdb"
 
-#end
-if [[ "$?" != "0" ]] ; then
-    echo -e "Could not download the PDB file. Please check PDB ID and/or online status\n"
+#check if file downloaded
+if [ ! -f ""$pdb_id".pdb" ]; then
+	echo -e "Could not download the PDB file. Please check PDB ID and/or online status\n"
+	exit 1
 else
 	echo -e "Download complete!!\n"
 fi
+
+#end

@@ -30,6 +30,15 @@ fi
 #function to download file
 function get_file {
 curl -O -sf "http://files.rcsb.org/view/"$pdb_id""$1""
+
+#check if file downloaded
+if [ ! -f ""$pdb_id""$1"" ]; then
+	echo -e "Could not download the file. Please check PDB ID and/or online status\n"
+	exit 1
+else
+	echo -e "Download complete!!\n"
+fi
+
 }
 
 #function to get cell dimensions
