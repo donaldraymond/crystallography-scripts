@@ -128,12 +128,6 @@ fi
 #get cif-file from PDB
 echo -e "Getting $pdb_id structure factor file from PDB\n"
 get_file "-sf.cif"
-
-#if cannot download the file, end script
-if [[ "$?" != "0" ]] ; then
-    echo -e "Could not download the cif file. Please check PDB ID and/or online status\n"
-    exit 1
-fi
 cif_file="$pdb_id-sf.cif"
 
 #get pdb file from RCSB
