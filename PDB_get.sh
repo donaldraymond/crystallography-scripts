@@ -9,7 +9,7 @@ fi
 
 #get pdb file pro
 echo -e "\nGetting $pdb_id coordinate file from PDB\n"
-curl -O -sf "http://www.rcsb.org/pdb/files/"$pdb_id".pdb"
+curl -O -sf "http://files.rcsb.org/view/"$pdb_id".pdb"
 
 #end
 if [[ "$?" != "0" ]] ; then

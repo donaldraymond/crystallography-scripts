@@ -29,7 +29,7 @@ fi
 
 #function to download file
 function get_file {
-curl -O -sf "http://www.rcsb.org/pdb/files/"$pdb_id""$1""
+curl -O -sf "http://files.rcsb.org/view/"$pdb_id""$1""
 }
 
 #function to get cell dimensions
