@@ -67,7 +67,8 @@ function int_amp {
 #Convert I to F
 tempMTZ2=_temp2$$.mtz
 echo -e "\nConverting intensities to amplitudes"
-truncate="$CCP4/bin/truncate"
+ccp4_bin=`dirname "$(which ccp4i)"`
+truncate="$ccp4_bin/truncate"
 $truncate HKLIN "$tempMTZ1" HKLOUT "$tempMTZ2" << eof > /dev/null
 truncate YES
 anomalous NO
