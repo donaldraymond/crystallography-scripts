@@ -43,6 +43,10 @@ Run like this `O_makemap.sh file.mtz file.pdb`, or simple run `O_makemap.sh` and
 
 This is a script to add a new map to an O on_startup file. I use this script to add DM or resolve maps to an on_startup file containing nFo-Fc maps.
 
+##O_buster.sh
+
+This is a script to generate O maps after refinement with Buster.
+
 ## O_pdb.sh 
 
 This script combines the functionality of PDB_grab.sh and O_makemap.sh. Essentially, it will download coordinate and reflection files from the PDB, generate maps and create an O macro to get the maps and PDB into O upon launch. Just run the script with a PDB ID and sit back and relax.
