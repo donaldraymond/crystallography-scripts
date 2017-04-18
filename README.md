@@ -39,11 +39,11 @@ The script uses fft for generating the maps and then uses mapmask to normalize t
 
 Run like this `O_makemap.sh file.mtz file.pdb`, or simple run `O_makemap.sh` and follow instructions.
 
-##O_addmap.sh
+## O_addmap.sh
 
 This is a script to add a new map to an O on_startup file. I use this script to add DM or resolve maps to an on_startup file containing nFo-Fc maps.
 
-##O_buster.sh
+## O_buster.sh
 
 This is a script to generate O maps after refinement with Buster.
 
