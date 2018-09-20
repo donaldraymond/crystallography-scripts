@@ -55,7 +55,7 @@ This script combines the functionality of PDB_grab.sh and O_makemap.sh. Essentia
 
 This script generates the O commands to insert residues into the database. It is most useful during building.
 
-##O_menu
+## O_menu
 This script is used to create my menu environment for O. Best used when starting O without my on_starup file.
 
 ## makemap.sh
@@ -86,6 +86,19 @@ This script runs XSCALE and XDSCONV after data processing to creates an MTZ file
 
 A script to create an MTZ file from XDS_ASCII.HKL and convert I to F. This script is superseded by XDS_scale.sh since XDSCONV can convert I to F.
 
+## CIF file creation
+
+These files can be used to create CIF for refining ligands
+
+### cif_grade.sh
+
+Use BUSTER/GRADE to create cif file
+
+### cif_phenix.sh
+
+Use Phenix to create cif file
+
 ## VI_CommandReference.pdf
 
 I love VI, so I made a cheat sheet. Now I'm a text editing ninja.
+
