@@ -135,7 +135,7 @@ for dir in $ImageFolder/*; do
 		crystal=`basename $dir`
 
 		# Run Xia2
-	 	xia2 pipeline=$prog project=$projectName space_group=$spaceGroup crystal=$crystal $dir
+	 	xia2 pipeline=$prog project=$projectName space_group=$spaceGroup min_images=450 crystal=$crystal $dir
 
 
 			
