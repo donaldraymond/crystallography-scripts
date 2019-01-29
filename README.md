@@ -8,6 +8,11 @@ Check permissions before running the scripts. Use `chmod +x script.sh` to make t
 
 Report bugs or feature request to *raymond [at] crystal.harvard.edu*
 
+
+## AutoProcess.sh
+
+This script will process all datasets in a designated folder using XDS or DIALS. It requires XIA2 and XDS or DIALS to run. You must pass a parent folder contains all the datasets for processing for the script to work. Diffraction images must be in the subfolder. 
+
 ## PDB_data.sh
 
 The purpose of this script is to download atomic coordinates and reflections files from the [Protein Data Bank.](www.rcsb.org)
