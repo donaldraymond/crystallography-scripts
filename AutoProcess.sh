@@ -27,11 +27,11 @@ clear
 #function to display intro
 function intro {
 	echo
-	echo "***********************************************************************"
+	echo "**************************************************************************"
 	echo
-	echo "This bash script To process all X-ray diffraction Datasets in a folder "
+	echo "This bash script will  process all X-ray diffraction Datasets in a folder "
 	echo
-	echo "***********************************************************************"
+	echo "**************************************************************************"
 	echo
 }
 
@@ -143,10 +143,13 @@ for dir in $ImageFolder/*; do
 		
 		if [ -e xia2-summary.dat ]; then
 			cat xia2-summary.dat >> ProcessingSummary.txt
+		else
+			echo -e "\n\t Processing $crystal failed. See $crystal/xia2-debug.txt for more information. \n" >> ProcessingSummary.txt
 		fi
 
-		echo -e "\n*****************************************************************************************************" >> ProcessingSummary.txt
-		echo -e "*****************************************************************************************************\n" >> ProcessingSummary.txt
+		# spacing
+		echo -e "\n********************************************************************************************************************" >> ProcessingSummary.txt
+		echo -e "********************************************************************************************************************\n" >> ProcessingSummary.txt
 		
 		#dealing with logs and Datafile directory
 		mv xia2* $crystal 2>/dev/null
