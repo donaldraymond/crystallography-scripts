@@ -73,7 +73,7 @@ echo -e "\n\n \tData Processing Summary\n\n" >> ProcessingSummary.txt
 #Ask about Project
 projectName=
 while [[ $projectName = "" ]];do
-	echo;echo -n "What is the Project name? (eg PPM1D): " 
+	echo;echo -n "What is the Project name? (eg RVFV): " 
 	read projectName
 done
 
@@ -126,16 +126,17 @@ for dir in $ImageFolder/*; do
 	[ -d "$dir" ] || continue
 	
 	# Confirm cbf files
-	count=`ls -1 $dir/*.cbf 2>/dev/null | wc -l`
-	if [ $count != "0" ]; then
+	count_cbf=`ls -1 $dir/*.cbf 2>/dev/null | wc -l`
+	count_img=`ls -1 $dir/*.img 2>/dev/null | wc -l`
+	if [ $count_cbf != "0" ] || [ $count_img != "0" ]; then
 		echo -e "Processing files in $dir \n"
-		echo -e "There are $count CBF files in this folder\n"
+		echo -e "There are $count_cbf CBF and $count_img IMG files in this folder\n"
 	
 		#get folder basename
 		crystal=`basename $dir`
 
 		# Run Xia2
-	 	xia2 pipeline=$prog project=$projectName space_group=$spaceGroup min_images=450 crystal=$crystal $dir
+	 	xia2 pipeline=$prog project=$projectName space_group=$spaceGroup min_images=200 crystal=$crystal $dir
 
 
 			
