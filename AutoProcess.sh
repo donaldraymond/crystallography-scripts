@@ -112,7 +112,7 @@ do
 	if [[ -n "$arg" ]] ; then 
 		ImageFolder=$arg
 		ImageFolder=${1%/}
-		echo -e "\nImage folders are located in $ImageFolder \n" 
+		echo -e "\nDatasets are located in $ImageFolder \n" 
 
 	else [[ -z "$arg" ]] 
 		echo -e "\nNo image folder provided, ending script \n"
@@ -124,19 +124,22 @@ done
 for dir in $ImageFolder/*; do
 	# check if file is a folder
 	[ -d "$dir" ] || continue
+
+	#find a folder containing at least 50 cbg or IMG files
+	container=`find $dir -type f \( -name "*50.cbf" -o -name "*50.CBF" -name "*50.img" -o -name "*50.IMG" \) -print -quit | xargs dirname 2>/dev/null`
 	
 	# Confirm cbf files
-	count_cbf=`ls -1 $dir/*.cbf 2>/dev/null | wc -l`
-	count_img=`ls -1 $dir/*.img 2>/dev/null | wc -l`
-	if [ $count_cbf != "0" ] || [ $count_img != "0" ]; then
+	count_cbf=`ls -1 $container/*.cbf 2>/dev/null | wc -l`
+	count_img=`ls -1 $container/*.img 2>/dev/null | wc -l`
+	if [ $count_cbf != "0" ] || [ $count_img != "0" ] && [ ! -f CORRECT.LP ] ; then
 		echo -e "Processing files in $dir \n"
-		echo -e "There are $count_cbf CBF and $count_img IMG files in this folder\n"
+		echo -e "Found $count_cbf CBF and $count_img IMG files in $container\n"
 	
 		#get folder basename
 		crystal=`basename $dir`
 
 		# Run Xia2
-	 	xia2 pipeline=$prog project=$projectName space_group=$spaceGroup min_images=200 crystal=$crystal $dir
+	 	xia2 pipeline=$prog project=$projectName space_group=$spaceGroup min_images=200 crystal=$crystal $container 
 
 
 			
@@ -144,6 +147,7 @@ for dir in $ImageFolder/*; do
 		
 		if [ -e xia2-summary.dat ]; then
 			cat xia2-summary.dat >> ProcessingSummary.txt
+		
 		else
 			echo -e "\n\t Processing $crystal failed. See $crystal/xia2-debug.txt for more information. \n" >> ProcessingSummary.txt
 		fi
@@ -156,6 +160,12 @@ for dir in $ImageFolder/*; do
 		mv xia2* $crystal 2>/dev/null
 		mv automatic.xinfo $crystal 2>/dev/null
 		mv DataFiles $crystal 2>/dev/null
+
+		# Run phenix pipeline to phase and refine model
+		#phenix.ligand_pipeline model.pdb ""$crystal"/DataFiles/"$projectName"_"$crystal"_free.mtz" nproc=12 skip_ligand=true mr=true copies=2 build=False refine.after_mr.cycles=3 refine.after_mr.optimize_weights=True refine.after_mr.real_space=False refine.after_mr.update_waters=False prune=False refine_after_fitting=False 
+
+		#move phenix pipeline files to appropriate folder
+		#mv pipeline* $crystal 2>/dev/null
 
 		echo -e "\n Moving to new dataset \n"
 		echo -e "\n#####################################################################################################"
